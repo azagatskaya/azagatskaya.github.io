@@ -27,6 +27,11 @@ export interface TransformedCustomers {
   [propName: number]: CustomerProps;
 }
 
+interface IToStringArr<T> {
+  value: T;
+  number: number;
+}
+
 export const removePlus = (string: string): string => string.replace(/^\+/, '');
 
 export const addPlus = (string: string): string => `+${string}`;
@@ -57,7 +62,7 @@ export const getColorContrastValue = ([red, green, blue]: RGB) =>
   // http://www.w3.org/TR/AERT#color-contrast
   Math.round((red * 299 + green * 587 + blue * 114) / 1000);
 
-export const getContrastType = (contrastValue: number): string => (contrastValue > 125 ? 'black' : 'white');
+export const getContrastType = (contrastValue: number): 'black' | 'white' => (contrastValue > 125 ? 'black' : 'white');
 
 export const shortColorRegExp = /^#[0-9a-f]{3}$/i;
 export const longColorRegExp = /^#[0-9a-f]{6}$/i;
@@ -80,9 +85,10 @@ export const hex2rgb = (color: string): RGB => {
   return [red, green, blue];
 };
 
-export const getNumberedArray = (arr: Array<any>): Array<NumberedArrElement> =>
+export const getNumberedArray = <T>(arr: Array<T>): Array<NumberedArrElement> =>
   arr.map((value, number) => ({ value, number }));
-export const toStringArray = (arr: Array<any>): Array<string> => arr.map(({ value, number }) => `${value}_${number}`);
+export const toStringArray = <T>(arr: Array<IToStringArr<T>>): Array<string> =>
+  arr.map(({ value, number }) => `${value}_${number}`);
 
 export const transformCustomers = (customers: [Customer]): TransformedCustomers => {
   return customers.reduce((acc: TransformedCustomers, customer: Customer) => {
