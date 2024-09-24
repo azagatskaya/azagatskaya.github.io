@@ -1,6 +1,7 @@
 {
   "name": "react-start-template",
   "version": "1.0.0",
+  "homepage": "https://azagatskaya.github.io",
   "description": "Start repo with required configuration",
   "main": "src/index.tsx",
   "author": "Igor <spirit-drive@yandex.ru>",
@@ -10,7 +11,9 @@
     "test": "jest src",
     "lint": "eslint src --fix",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "license": "MIT",
   "devDependencies": {
@@ -46,6 +49,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.8.0",
     "fork-ts-checker-webpack-plugin": "^8.0.0",
+    "gh-pages": "^6.1.1",
     "html-webpack-plugin": "^5.5.1",
     "husky": "^8.0.0",
     "jest": "^29.5.0",
