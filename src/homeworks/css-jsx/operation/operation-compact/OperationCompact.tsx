@@ -1,15 +1,20 @@
 import React from 'react';
 import styles from './operationCompact.module.sass';
 import rubIcon from '../assets/rub.svg';
+import { Category, Operation } from 'src/homeworks/ts1/3_write';
+import { RenameTypeField } from 'src/homeworks/css-jsx/operation/lib/renameTypeField';
 
-type OperationCompactProps = {
-  amount: number;
-  categoryName: string;
-  name: string;
-  desc: string;
-};
+type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
-export default function OperationCompact({ amount, categoryName, name, desc }: OperationCompactProps) {
+type OperationProps = Pick<Operation, 'amount' | 'name' | 'desc'>;
+type OperationCompactProps = OperationProps & RenamedCatName;
+
+export default function OperationCompact({
+  amount,
+  categoryName,
+  name,
+  desc,
+}: OperationCompactProps): React.JSX.Element {
   return (
     <div className={styles.container}>
       <div className={styles.row}>

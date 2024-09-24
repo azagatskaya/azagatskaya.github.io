@@ -3,20 +3,27 @@ import styles from './operationFull.module.sass';
 import clsx from 'clsx';
 import editIcon from '../assets/edit.svg';
 import saveIcon from '../assets/save.svg';
+import { Category, Operation } from 'src/homeworks/ts1/3_write';
+import { RenameTypeField } from 'src/homeworks/css-jsx/operation/lib/renameTypeField';
 
-type OperationFullProps = {
-  amount: number;
-  categoryName: string;
-  name: string;
-  desc: string;
-  date: string;
-};
+type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
-export default function OperationFull({ amount, categoryName, name, desc, date }: OperationFullProps) {
-  const [mode, setMode] = useState('preview');
+type OperationProps = Pick<Operation, 'amount' | 'name' | 'desc' | 'createdAt'>;
+type OperationFullProps = OperationProps & RenamedCatName;
 
-  const handleToggleMode = () => {
-    setMode((prevState) => (prevState === 'edit' ? 'preview' : 'edit'));
+type ModeType = 'edit' | 'preview';
+
+export default function OperationFull({
+  amount,
+  categoryName,
+  name,
+  desc,
+  createdAt,
+}: OperationFullProps): React.JSX.Element {
+  const [mode, setMode] = useState<ModeType>('preview');
+
+  const handleToggleMode = (): void => {
+    setMode((prevState: ModeType) => (prevState === 'edit' ? 'preview' : 'edit'));
   };
 
   return (
@@ -41,7 +48,7 @@ export default function OperationFull({ amount, categoryName, name, desc, date }
           id={'date'}
           name="date"
           required
-          value={date}
+          value={createdAt}
         />
       </fieldset>
       <fieldset className={clsx(styles.fieldset, styles.fieldsetTextField)}>

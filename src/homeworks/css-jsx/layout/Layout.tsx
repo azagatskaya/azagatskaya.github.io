@@ -2,7 +2,11 @@ import React from 'react';
 import styles from './layout.module.sass';
 import Header from '../header/Header';
 
-export default function Layout({ children }) {
+interface LayoutProps {
+  children: React.JSX.Element;
+}
+
+export default function Layout({ children }: LayoutProps): React.JSX.Element {
   return (
     <div className={styles.layout}>
       <Header />

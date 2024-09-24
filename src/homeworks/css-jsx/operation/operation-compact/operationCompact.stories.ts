@@ -1,6 +1,7 @@
+import type { Meta } from '@storybook/react';
 import OperationCompact from './OperationCompact';
 
-const meta = {
+const meta: Meta<typeof OperationCompact> = {
   title: 'Example/OperationCompact',
   component: OperationCompact,
   tags: ['autodocs'],

@@ -44,7 +44,7 @@ type Profit = {
   type: 'Profit';
 };
 
-type Operation = Cost | Profit;
+export type Operation = Cost | Profit;
 
 /**
  * Создает случайный продукт (Product).

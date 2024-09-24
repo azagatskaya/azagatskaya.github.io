@@ -1,6 +1,7 @@
+import type { Meta } from '@storybook/react';
 import OperationFull from './OperationFull';
 
-const meta = {
+const meta: Meta<typeof OperationFull> = {
   title: 'Example/OperationFull',
   component: OperationFull,
   tags: ['autodocs'],
@@ -9,7 +10,7 @@ const meta = {
     categoryName: { type: 'string' },
     name: { type: 'string' },
     desc: { type: 'string' },
-    date: { type: 'string' },
+    createdAt: { type: 'string' },
   },
 };
 

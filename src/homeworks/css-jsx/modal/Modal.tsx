@@ -1,7 +1,14 @@
 import React from 'react';
 import styles from './modal.module.sass';
 import closeIcon from './close.svg';
-export default function Modal({ visible = true, setVisible = () => {}, children = '' }) {
+
+interface ModalProps {
+  visible: boolean;
+  setVisible: (visible: boolean) => void;
+  children: string;
+}
+
+export default function Modal({ visible = true, setVisible, children = '' }: ModalProps): React.JSX.Element {
   return (
     <>
       {visible ? (

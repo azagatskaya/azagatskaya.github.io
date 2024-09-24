@@ -1,6 +1,7 @@
+import type { Meta } from '@storybook/react';
 import Layout from './Layout';
 
-const meta = {
+const meta: Meta<typeof Layout> = {
   title: 'Example/Layout',
   component: Layout,
   tags: ['autodocs'],
@@ -13,7 +14,6 @@ export const Main = {
     children: ['Lorem ipsum'],
   },
   parameters: {
-    // More on how to position stories at: https://storybook.js.org/docs/react/configure/story-layout
     layout: 'fullscreen',
   },
 };
