@@ -2,7 +2,14 @@ import React from 'react';
 import styles from './operationCompact.module.sass';
 import rubIcon from '../assets/rub.svg';
 
-export default function OperationCompact({ amount, categoryName, name, desc }) {
+type OperationCompactProps = {
+  amount: number;
+  categoryName: string;
+  name: string;
+  desc: string;
+};
+
+export default function OperationCompact({ amount, categoryName, name, desc }: OperationCompactProps) {
   return (
     <div className={styles.container}>
       <div className={styles.row}>

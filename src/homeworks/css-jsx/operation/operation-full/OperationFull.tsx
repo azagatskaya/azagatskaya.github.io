@@ -4,7 +4,15 @@ import clsx from 'clsx';
 import editIcon from '../assets/edit.svg';
 import saveIcon from '../assets/save.svg';
 
-export default function OperationFull({ amount, categoryName, name, desc, date }) {
+type OperationFullProps = {
+  amount: number;
+  categoryName: string;
+  name: string;
+  desc: string;
+  date: string;
+};
+
+export default function OperationFull({ amount, categoryName, name, desc, date }: OperationFullProps) {
   const [mode, setMode] = useState('preview');
 
   const handleToggleMode = () => {
