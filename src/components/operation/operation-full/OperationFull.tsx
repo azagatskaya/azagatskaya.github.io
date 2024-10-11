@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import editIcon from '../assets/edit.svg';
 import saveIcon from '../assets/save.svg';
 import { Category, Operation } from 'src/homeworks/ts1/3_write';
-import { RenameTypeField } from 'src/homeworks/css-jsx/operation/lib/renameTypeField';
+import { RenameTypeField } from 'src/components/operation/lib/renameTypeField';
 
 type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
