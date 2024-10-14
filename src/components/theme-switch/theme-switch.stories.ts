@@ -1,30 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import OperationCompact from './OperationCompact';
-import ThemeSwitch from 'src/components/theme-switch/ThemeSwitch';
+import ThemeSwitch from '../theme-switch/ThemeSwitch';
 
-const meta: Meta<typeof OperationCompact> = {
-  title: 'Example/OperationCompact',
-  component: OperationCompact,
+const meta: Meta<typeof ThemeSwitch> = {
+  title: 'Example/ThemeSwitch',
+  component: ThemeSwitch,
 };
-
-//  argTypes: {
-//     amount: { type: 'number' },
-//     categoryName: { type: 'string' },
-//     name: { type: 'string' },
-//     desc: { type: 'string' },
-//   },
 
 export default meta;
 
 type Story = StoryObj<typeof ThemeSwitch>;
 
 export const Dark: Story = {
-  args: {
-    amount: 6799,
-    categoryName: 'Ноутбук',
-    name: 'Трата',
-    desc: 'Покупка техники для офиса (ноутбук Apple MacBook Pro 14 M3 2023)',
-  },
   parameters: {
     theme: 'dark',
     palette: {
@@ -42,12 +28,6 @@ export const Dark: Story = {
 };
 
 export const Light: Story = {
-  args: {
-    amount: 6799,
-    categoryName: 'Ноутбук',
-    name: 'Трата',
-    desc: 'Покупка техники для офиса (ноутбук Apple MacBook Pro 14 M3 2023)',
-  },
   parameters: {
     theme: 'light',
     palette: {

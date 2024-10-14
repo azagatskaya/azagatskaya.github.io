@@ -1,22 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Layout from './Layout';
+import LanguageSelect from './LanguageSelect';
 
-const meta: Meta<typeof Layout> = {
-  title: 'Example/Layout',
-  component: Layout,
-  tags: ['autodocs'],
+const meta: Meta<typeof LanguageSelect> = {
+  title: 'Example/LanguageSelect',
+  component: LanguageSelect,
 };
 
 export default meta;
 
-type Story = StoryObj<typeof Layout>;
+type Story = StoryObj<typeof LanguageSelect>;
 
-export const Dark: Story = {
-  args: {
-    children: ['Lorem ipsum'],
-  },
+export const Ru: Story = {
   parameters: {
-    layout: 'fullscreen',
+    lang: 'ru',
     theme: 'dark',
     palette: {
       primary: '#2a698c',
@@ -32,12 +28,8 @@ export const Dark: Story = {
   },
 };
 
-export const Light: Story = {
-  args: {
-    children: ['Lorem ipsum'],
-  },
+export const En: Story = {
   parameters: {
-    layout: 'fullscreen',
     lang: 'en',
     theme: 'light',
     palette: {
