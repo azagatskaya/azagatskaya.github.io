@@ -1,4 +1,11 @@
-import { getCategory, getId, getProductDesc, getProductName, getRandom } from 'src/homeworks/ts1/mock/products';
+import {
+  getCategory,
+  getId,
+  getProductDesc,
+  getProductName,
+  getRandom,
+  getRandomDate,
+} from 'src/homeworks/ts1/mock/products';
 
 /**
  * Функции написанные здесь пригодятся на последующих уроках
@@ -82,4 +89,12 @@ export const createRandomOperation = (createdAt: string): Operation => {
     category,
     type,
   };
+};
+
+export const createRandomOperations = (count: number): Operation[] => {
+  const operations = [];
+  for (let i = count; i > 0; i--) {
+    operations.push(createRandomOperation(getRandomDate()));
+  }
+  return operations;
 };

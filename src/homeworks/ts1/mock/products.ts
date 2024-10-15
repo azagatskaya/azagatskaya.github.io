@@ -1,4 +1,5 @@
 import { Category } from 'src/homeworks/ts1/3_write';
+import dayjs from 'dayjs';
 
 type MockCategory = {
   id: string;
@@ -9,7 +10,7 @@ type MockCategory = {
 const mockCategories: Array<MockCategory> = [
   {
     id: 'cat_SgGe',
-    name: 'notebook',
+    name: 'Ноутбук',
     products: [
       'Apple MacBook Pro 14 M3 2023',
       'Lenovo Legion 5 Pro',
@@ -20,7 +21,7 @@ const mockCategories: Array<MockCategory> = [
   },
   {
     id: 'cat_f6c',
-    name: 'smartphone',
+    name: 'Смартфон',
     products: [
       'Samsung Galaxy S24 Ultra',
       'Apple iPhone 15 Pro',
@@ -31,7 +32,7 @@ const mockCategories: Array<MockCategory> = [
   },
   {
     id: 'cat_sNEn',
-    name: 'monitor',
+    name: 'Монитор',
     products: [
       'TCL 115" 4K UHD QD-Mini LED Smart TV',
       'Samsung 65" 4K UHD Neo QLED',
@@ -42,7 +43,7 @@ const mockCategories: Array<MockCategory> = [
   },
   {
     id: 'cat_XvXi',
-    name: 'smart watch',
+    name: 'Умные часы',
     products: [
       'Samsung Galaxy Watch Ultra 47 мм',
       'Huawei Watch Ultimate Design',
@@ -97,4 +98,10 @@ export const getProductName = (categoryName: string): string => {
 
 export const getProductDesc = (name: string): string => {
   return `${name} ${mockDesc[Math.floor(Math.random() * mockDesc.length)]}`;
+};
+
+export const getRandomDate = (): string => {
+  const start = new Date(2024, 0, 1);
+  const end = new Date();
+  return dayjs(new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))).format('YYYY-MM-DD');
 };
