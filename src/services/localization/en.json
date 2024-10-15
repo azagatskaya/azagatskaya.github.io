@@ -1,0 +1,17 @@
+{
+  "translation": {
+    "companyName": "Company",
+    "save": "Save",
+    "edit": "Edit",
+    "operations": {
+      "title": "Operation",
+      "cost": "Cost",
+      "profit": "Profit",
+      "amount": "Amount (rub.)",
+      "description": "Description",
+      "categoryName": "Category",
+      "operationName": "Operation name",
+      "createdAt": "Created at"
+    }
+  }
+}

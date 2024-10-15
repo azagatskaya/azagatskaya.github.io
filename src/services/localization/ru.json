@@ -1,0 +1,17 @@
+{
+  "translation": {
+    "companyName": "Компания",
+    "save": "Сохранить",
+    "edit": "Изменить",
+    "operations": {
+      "title": "Операция",
+      "cost": "Трата",
+      "profit": "Доход",
+      "amount": "Сумма (руб.)",
+      "description": "Описание",
+      "categoryName": "Категория",
+      "operationName": "Название операции",
+      "createdAt": "Дата"
+    }
+  }
+}
