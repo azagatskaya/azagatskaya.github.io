@@ -1,9 +1,8 @@
-import React, { useContext } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import { Card, Typography } from 'antd';
 import { Category, Operation } from 'src/homeworks/ts1/3_write';
 import { RenameTypeField } from '../../operation/lib/renameTypeField';
 import ThemeContext from '../../../contexts/ThemeContext';
-import { useTranslation } from 'react-i18next';
 
 type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
@@ -22,12 +21,7 @@ const styles = {
   },
 };
 
-export default function OperationCompact({
-  amount,
-  categoryName,
-  name,
-  desc = 'Покупка техники для офиса (ноутбук Apple MacBook Pro 14 M3 2023)',
-}: OperationCompactProps): React.JSX.Element {
+export default function OperationCompact({ amount, categoryName, name, desc }: OperationCompactProps): ReactNode {
   const { palette } = useContext(ThemeContext);
 
   return (

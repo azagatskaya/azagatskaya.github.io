@@ -3,6 +3,8 @@
     "companyName": "Компания",
     "save": "Сохранить",
     "edit": "Изменить",
+    "ok": "ОК",
+    "showMoreButton": "Показать еще",
     "operations": {
       "title": "Операция",
       "cost": "Трата",
