@@ -3,6 +3,8 @@
     "companyName": "Company",
     "save": "Save",
     "edit": "Edit",
+    "ok": "OK",
+    "showMoreButton": "Show more",
     "operations": {
       "title": "Operation",
       "cost": "Cost",
