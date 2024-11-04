@@ -4,6 +4,14 @@ import { MoonFilled, MoonOutlined, SunFilled, SunOutlined } from '@ant-design/ic
 import ThemeContext, { ThemeType } from '../../contexts/ThemeContext';
 import { RadioChangeEvent } from 'antd/lib';
 
+const DarkThemeIcon = ({ theme }: { theme: ThemeType }): ReactNode => {
+  return theme === 'dark' ? <MoonFilled style={styles.iconDark} /> : <MoonOutlined style={styles.iconDark} />;
+};
+
+const LightThemeIcon = ({ theme }: { theme: ThemeType }): ReactNode => {
+  return theme === 'light' ? <SunFilled style={styles.iconLight} /> : <SunOutlined style={styles.iconLight} />;
+};
+
 export default function ThemeSwitch(): ReactNode {
   const { setTheme, theme, palette } = useContext(ThemeContext);
 
@@ -15,20 +23,17 @@ export default function ThemeSwitch(): ReactNode {
     <Flex vertical={false} gap="middle">
       <Radio.Group defaultValue={theme} onChange={handleChangeTheme} size={'large'}>
         <Radio.Button value="dark" style={{ backgroundColor: palette.foreground }}>
-          {theme === 'dark' ? (
-            <MoonFilled style={{ color: '#303f9f' }} />
-          ) : (
-            <MoonOutlined style={{ color: '#303f9f' }} />
-          )}
+          <DarkThemeIcon theme={theme} />
         </Radio.Button>
         <Radio.Button value="light" style={{ backgroundColor: palette.background }}>
-          {theme === 'light' ? (
-            <SunFilled style={{ color: '#f57f17' }} />
-          ) : (
-            <SunOutlined style={{ color: '#f57f17' }} />
-          )}
+          <LightThemeIcon theme={theme} />
         </Radio.Button>
       </Radio.Group>
     </Flex>
   );
 }
+
+const styles = {
+  iconDark: { color: '#303f9f' },
+  iconLight: { color: '#f57f17' },
+};
