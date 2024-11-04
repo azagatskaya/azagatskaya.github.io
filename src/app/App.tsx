@@ -5,6 +5,8 @@ import ThemeContext, { ThemeType } from 'src/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import LocalizationContext from 'src/contexts/LocalizationContext';
 import OperationList from 'src/components/operation/list/OperationList';
+import OperationCompact from 'src/components/operation/operation-compact/OperationCompact';
+import { Operation } from 'src/homeworks/ts1/3_write';
 
 function App() {
   const [theme, setTheme] = useState<ThemeType>('light');
@@ -34,7 +36,13 @@ function App() {
     <ThemeContext.Provider value={{ theme, setTheme, palette }}>
       <LocalizationContext.Provider value={{ lang, setLang }}>
         <Layout>
-          <OperationList />
+          <OperationList>
+            {(operations: Operation[]) => {
+              return operations.map(({ id, amount, name, desc, category: { name: catName } }) => (
+                <OperationCompact key={id} amount={amount} categoryName={catName} name={name} desc={desc} />
+              ));
+            }}
+          </OperationList>
         </Layout>
       </LocalizationContext.Provider>
     </ThemeContext.Provider>
