@@ -68,7 +68,7 @@ export default function OperationList(): ReactNode {
     return filteredData.map(({ id, amount, name, desc, category: { name: catName } }) => (
       <OperationCompact key={id} amount={amount} categoryName={catName} name={name} desc={desc} />
     ));
-  }, [operationComparator, operations, range.max, range.min]);
+  }, [filteredData]);
 
   return (
     <Flex gap={16} wrap style={{ width: 616 }}>
