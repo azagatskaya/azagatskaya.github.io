@@ -32,7 +32,6 @@ const resizeButtonStyle: CSSProperties = {
   width: 60,
   height: 2,
   borderRadius: 1,
-  backgroundColor: '#00000022',
   cursor: 'ns-resize',
 };
 
@@ -131,7 +130,10 @@ export default function OperationCompact({ amount, categoryName, name, desc }: O
     >
       <Typography style={{ color: palette.fontColor }}>{categoryName}</Typography>
       <Typography style={{ color: palette.fontColor }}>{desc || ''}</Typography>
-      <div style={resizeButtonStyle} onMouseDown={onMouseDownResizer}></div>
+      <div
+        style={{ ...resizeButtonStyle, backgroundColor: palette.fontColorDisabled }}
+        onMouseDown={onMouseDownResizer}
+      ></div>
     </Card>
   );
 }
