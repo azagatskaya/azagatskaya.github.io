@@ -4,10 +4,7 @@ import { Button, Flex } from 'antd';
 import { useTranslation } from 'react-i18next';
 import RangeSlider from 'src/components/range-slider/RangeSlider';
 import AmountSorting from 'src/components/amount-sorting/AmountSorting';
-
-interface funcAsChildrenProps {
-  children: (operations: Operation[]) => ReactNode;
-}
+import OperationCompact from 'src/components/operation/operation-compact/OperationCompact';
 
 export enum AmountSortingEnum {
   dateAsc = 'dateAsc',
@@ -28,7 +25,7 @@ export const AMOUNT_MAX = 10_000;
 
 const defaultAmountRange = { min: AMOUNT_MIN, max: AMOUNT_MAX };
 
-export default function OperationList({ children }: funcAsChildrenProps): ReactNode {
+export default function OperationList(): ReactNode {
   const { t } = useTranslation();
   const [range, setRange] = useState<RangeType>(defaultAmountRange);
   const [operations, setOperations] = useState<Operation[]>(createRandomOperations(10));
@@ -67,13 +64,19 @@ export default function OperationList({ children }: funcAsChildrenProps): ReactN
       .sort((op1, op2) => operationComparator(op1, op2));
   }, [operationComparator, operations, range.max, range.min]);
 
+  const items = useMemo(() => {
+    return filteredData.map(({ id, amount, name, desc, category: { name: catName } }) => (
+      <OperationCompact key={id} amount={amount} categoryName={catName} name={name} desc={desc} />
+    ));
+  }, [filteredData]);
+
   return (
     <Flex gap={16} wrap style={{ width: 616 }}>
       <Flex gap={16} style={{ width: '100%', height: 48 }} dir={'row'} justify={'space-between'} align={'center'}>
         <RangeSlider range={range} onChange={handleRangeChange} />
         <AmountSorting value={sorting} onChange={handleChangeSorting} />
       </Flex>
-      {children(filteredData)}
+      {items}
       <Button variant={'solid'} color={'primary'} onClick={handleShowMoreCLick} style={{ width: '100%' }}>
         {t('showMoreButton')}
       </Button>
