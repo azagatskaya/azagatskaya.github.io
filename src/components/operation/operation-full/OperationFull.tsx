@@ -1,7 +1,8 @@
 import React, { ReactNode, useContext, useState } from 'react';
 import { Category, Operation } from '../../../homeworks/ts1/3_write';
 import { RenameTypeField } from '../../operation/lib/renameTypeField';
-import { Button, Card, DatePicker, Form, FormProps, Input, Typography } from 'antd';
+import { Button, Card, DatePicker, Form, Input, Typography } from 'antd';
+import type { FormProps } from 'antd';
 import ThemeContext from '../../../contexts/ThemeContext';
 import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
