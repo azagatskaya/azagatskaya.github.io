@@ -14,6 +14,12 @@
       "categoryName": "Категория",
       "operationName": "Название операции",
       "createdAt": "Дата"
-    }
+    },
+    "rangeSliderLabel": "Сумма",
+    "sorting": "Сортировка",
+    "dateAsc" : "Сначала новые",
+    "dateDesc" : "Сначала старые",
+    "amountAsc" : "По сумме (возрастание)",
+    "amountDesc" : "По сумме (убывание)"
   }
 }
