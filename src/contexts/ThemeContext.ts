@@ -4,7 +4,7 @@ export type ThemeType = 'dark' | 'light';
 
 type ThemeContextType = {
   theme: ThemeType;
-  setTheme: Dispatch<SetStateAction<ThemeType>>; // (theme: string) => void;
+  setTheme: Dispatch<SetStateAction<ThemeType>> | null;
   palette: {
     primary: string;
     secondary: string;
@@ -20,7 +20,7 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType>({
   theme: 'light',
-  setTheme: () => {},
+  setTheme: null,
   palette: {
     primary: '',
     secondary: '',
