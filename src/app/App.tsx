@@ -4,12 +4,14 @@ import Layout from 'src/components/layout/Layout';
 import ThemeContext, { ThemeType } from 'src/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import LocalizationContext from 'src/contexts/LocalizationContext';
-import OperationList from 'src/components/operation/list/OperationList';
+import AuthContext, { AuthType } from 'src/contexts/AuthContext';
+import AuthBlock from 'src/components/auth-block/AuthBlock';
 
 function App() {
   const [theme, setTheme] = useState<ThemeType>('light');
   const { i18n } = useTranslation();
   const [lang, setLang] = useState('ru');
+  const [authMode, setAuthMode] = useState<AuthType>('login');
 
   useEffect(() => {
     i18n.changeLanguage(lang);
@@ -33,9 +35,11 @@ function App() {
   return (
     <ThemeContext.Provider value={{ theme, setTheme, palette }}>
       <LocalizationContext.Provider value={{ lang, setLang }}>
-        <Layout>
-          <OperationList />
-        </Layout>
+        <AuthContext.Provider value={{ authMode, setAuthMode }}>
+          <Layout>
+            <AuthBlock />
+          </Layout>
+        </AuthContext.Provider>
       </LocalizationContext.Provider>
     </ThemeContext.Provider>
   );

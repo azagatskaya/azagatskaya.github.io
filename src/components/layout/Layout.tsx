@@ -4,6 +4,8 @@ import ThemeContext from '../../contexts/ThemeContext';
 import Logo from '../logo/Logo';
 import ThemeSwitch from '../theme-switch/ThemeSwitch';
 import LanguageSelect from '../language-select/LanguageSelect';
+import Login from '../login/Login';
+import ProfileButton from '../profile-button/ProfileButton';
 
 const { Header: AntHeader, Content } = AntLayout;
 
@@ -59,6 +61,8 @@ export default function Layout({ children }: LayoutProps): ReactNode {
       <AntHeader style={headerStyle}>
         <Logo />
         <Flex vertical={false} gap={16} justify={'flex-end'} align={'center'}>
+          <ProfileButton />
+          <Login />
           <ThemeSwitch />
           <LanguageSelect />
         </Flex>
