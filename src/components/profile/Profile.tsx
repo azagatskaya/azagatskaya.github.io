@@ -66,7 +66,7 @@ export default function Profile() {
             { required: true, message: 'Поле не должно быть пустым' },
           ]}
         >
-          <Input.Password />
+          <Input />
         </Form.Item>
         <Form.Item label={null} style={{ marginTop: 16 }}>
           <Button block type="primary" htmlType="submit">
