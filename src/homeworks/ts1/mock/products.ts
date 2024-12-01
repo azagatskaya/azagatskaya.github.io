@@ -1,15 +1,30 @@
 import { Category } from 'src/homeworks/ts1/3_write';
 import dayjs from 'dayjs';
 
-type MockCategory = {
+export type MockCategory = {
   id: string;
   name: string;
   products: string[];
 };
 
-const mockCategories: Array<MockCategory> = [
+export const mockCategories: Array<MockCategory> = [
   {
     id: 'cat_SgGe',
+    name: 'Car',
+    products: ['Suzuki Grand Vitara', 'Toyota Yaris', 'Subaru Outback', 'Volkswagen Golf', 'Nissan Juke'],
+  },
+  {
+    id: 'cat_vA7x',
+    name: 'Toy',
+    products: ['Lego Minecraft', 'Playmobil School', 'Lego Tree House', 'Playmobil Submarine', 'Tomy Pop Up T-rex'],
+  },
+  {
+    id: 'cat_qPb3',
+    name: 'Food',
+    products: ['Apples', 'Chocolate Friut&Nuts', 'Bananas', 'Milk', 'Salad', 'Coffee', 'Cookies'],
+  },
+  {
+    id: 'cat_A5Xe',
     name: 'Ноутбук',
     products: [
       'Apple MacBook Pro 14 M3 2023',
