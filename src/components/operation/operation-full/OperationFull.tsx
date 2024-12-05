@@ -4,7 +4,7 @@ import { RenameTypeField } from '../../operation/lib/renameTypeField';
 import { Button, Card, DatePicker, Form, Input, Typography } from 'antd';
 import type { FormProps } from 'antd';
 import ThemeContext from '../../../contexts/ThemeContext';
-import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
 const { TextArea } = Input;
@@ -15,14 +15,6 @@ type FieldType = {
   categoryName?: string;
   name?: string;
   desc?: string;
-};
-
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-  console.log('Success:', values);
-};
-
-const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-  console.log('Failed:', errorInfo);
 };
 
 const styles = {
@@ -44,8 +36,10 @@ const styles = {
 
 type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
-type OperationProps = Pick<Operation, 'amount' | 'name' | 'desc' | 'createdAt'>;
-type OperationFullProps = OperationProps & RenamedCatName;
+export type OperationProps = Pick<Operation, 'id' | 'amount' | 'name' | 'desc' | 'createdAt'>;
+export type OperationFullProps = OperationProps &
+  RenamedCatName &
+  Record<'handleItemChange', (op: OperationProps) => void>;
 
 type ModeType = 'edit' | 'preview';
 
@@ -80,7 +74,15 @@ const opStateReducer = (state: FieldType, action: OpStateAction) => {
 
 const msgRequiredField = 'Обязательное поле';
 
-export default function OperationFull({ amount, categoryName, name, desc, createdAt }: OperationFullProps): ReactNode {
+export default function OperationFull({
+  id,
+  amount,
+  categoryName,
+  name,
+  desc,
+  createdAt,
+  handleItemChange,
+}: OperationFullProps): ReactNode {
   const { palette } = useContext(ThemeContext);
   const [mode, setMode] = useState<ModeType>('preview');
   const { t } = useTranslation();
@@ -91,6 +93,7 @@ export default function OperationFull({ amount, categoryName, name, desc, create
     desc: desc ?? '',
     createdAt: createdAt ?? '',
   });
+  const [form] = Form.useForm();
 
   const handleToggleMode = (): void => {
     setMode((prevState: ModeType) => (prevState === 'edit' ? 'preview' : 'edit'));
@@ -113,40 +116,43 @@ export default function OperationFull({ amount, categoryName, name, desc, create
     });
   };
 
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      console.log('values', values);
+      onFinish(values);
+      handleItemChange({ ...values, createdAt, id });
+      handleToggleMode();
+    } catch (e) {
+      onFinishFailed(e);
+    }
+  };
+
+  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    console.log('Success:', values);
+  };
+
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
   return (
     <Card
-      title={<Typography style={{ ...styles.title, color: palette.fontColor }}>{t('operations.title')}</Typography>}
-      extra={
-        <Button
-          shape="circle"
-          variant={'filled'}
-          onClick={handleToggleMode}
-          color="primary"
-          style={{
-            color: '#fff',
-            backgroundColor: palette.primary,
-          }}
-        >
-          <EditOutlined />
-        </Button>
-      }
+      bordered={false}
       style={{
-        margin: '16px 0',
         width: 600,
+        height: 320,
         textAlign: 'left',
+        boxShadow: 'none',
         backgroundColor: palette.background,
-        borderColor: palette.borderColor,
       }}
-      styles={{
-        header: { width: 600, padding: '12px 14px 12px 24px', borderBottom: `1px solid ${palette.borderColor}` },
-        body: { padding: '16px 24px' },
-      }}
+      styles={{ body: { padding: '16px 0 0' } }}
     >
       <Form
+        form={form}
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
         style={{ maxWidth: 600 }}
-        onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
@@ -280,19 +286,17 @@ export default function OperationFull({ amount, categoryName, name, desc, create
         </Form.Item>
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
           <Button
-            disabled={mode !== 'edit'}
             variant={'filled'}
-            color="primary"
             htmlType="submit"
+            onClick={mode === 'preview' ? handleToggleMode : handleSubmit}
             style={{
               ...styles.button,
-              color: mode !== 'edit' ? palette.fontColorDisabled : '#fff',
-              backgroundColor: mode !== 'edit' ? palette.foreground : palette.success,
-              borderColor: palette.borderColor,
+              color: '#fff',
+              backgroundColor: mode !== 'edit' ? '#1677FF' : palette.success,
             }}
             icon={<CheckCircleOutlined />}
           >
-            {t('save')}
+            {t(mode === 'edit' ? 'save' : 'edit')}
           </Button>
         </Form.Item>
       </Form>

@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import './App.css';
-import Layout from 'src/components/layout/Layout';
 import ThemeContext, { ThemeType } from 'src/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import LocalizationContext from 'src/contexts/LocalizationContext';
 import AuthContext, { AuthType } from 'src/contexts/AuthContext';
-import AuthBlock from 'src/components/auth-block/AuthBlock';
+import AuthPage from 'src/pages/auth';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ProfilePage from 'src/pages/profile';
+import OperationsPage from 'src/pages/operations';
 
 function App() {
   const [theme, setTheme] = useState<ThemeType>('light');
@@ -36,9 +38,15 @@ function App() {
     <ThemeContext.Provider value={{ theme, setTheme, palette }}>
       <LocalizationContext.Provider value={{ lang, setLang }}>
         <AuthContext.Provider value={{ authMode, setAuthMode }}>
-          <Layout>
-            <AuthBlock />
-          </Layout>
+          <BrowserRouter>
+            <Routes>
+              <Route path={'/'} element={<OperationsPage />} />
+              <Route path={'/operations'} element={<OperationsPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="*" element={<ProfilePage />} />
+            </Routes>
+          </BrowserRouter>
         </AuthContext.Provider>
       </LocalizationContext.Provider>
     </ThemeContext.Provider>

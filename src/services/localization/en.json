@@ -6,6 +6,8 @@
     "ok": "OK",
     "showMoreButton": "Show more",
     "operations": {
+      "listTitle": "Operations",
+      "modalTitle": "Operation preview/editing",
       "title": "Operation",
       "cost": "Cost",
       "profit": "Profit",
@@ -20,6 +22,9 @@
     "dateAsc" : "By date ascending",
     "dateDesc" : "By date descending",
     "amountAsc" : "By amount ascending",
-    "amountDesc" : "By amount descending"
+    "amountDesc" : "By amount descending",
+    "profileButton": "Profile",
+    "loginButton": "Login",
+    "logoutButton": "Logout"
   }
 }

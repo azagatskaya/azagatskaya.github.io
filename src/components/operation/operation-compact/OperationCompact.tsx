@@ -7,7 +7,7 @@ import ThemeContext from '../../../contexts/ThemeContext';
 type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
 type OperationProps = Pick<Operation, 'amount' | 'name' | 'desc'>;
-type OperationCompactProps = OperationProps & RenamedCatName;
+type OperationCompactProps = OperationProps & RenamedCatName & Record<'handleClick', () => void>;
 
 const styles = {
   operationName: {
@@ -58,7 +58,13 @@ const useMountTransition = (isMounted: boolean, unmountDelay: number) => {
   return hasTransitionedIn;
 };
 
-export default function OperationCompact({ amount, categoryName, name, desc }: OperationCompactProps): ReactNode {
+export default function OperationCompact({
+  amount,
+  categoryName,
+  name,
+  desc,
+  handleClick,
+}: OperationCompactProps): ReactNode {
   const { palette } = useContext(ThemeContext);
   const [cardHeight, setCardHeight] = useState(MIN_CARD_HEIGHT);
   const [isMounted, setIsMounted] = useState(false);
@@ -81,7 +87,6 @@ export default function OperationCompact({ amount, categoryName, name, desc }: O
     const move = (e: MouseEvent) => {
       e.preventDefault();
       const rect = root.current.getBoundingClientRect();
-      // const x = start.x - (e.clientX - rect.x);
       const y = start.y - (e.clientY - rect.y);
       safeSetSizes(start.height - y);
     };
@@ -106,15 +111,21 @@ export default function OperationCompact({ amount, categoryName, name, desc }: O
     };
   }, []);
 
+  const handleClickOperation = () => {
+    handleClick();
+  };
+
   return (
     <Card
       ref={root}
       title={<Typography style={styles.amount}>{`\u20bd ${amount}`}</Typography>}
       extra={<Typography style={styles.operationName}>{name}</Typography>}
       size="small"
+      onClick={handleClickOperation}
       style={{
         width: 300,
         textAlign: 'left',
+        cursor: 'pointer',
         backgroundColor: palette.background,
         borderColor: palette.borderColor,
         minHeight: cardHeight,

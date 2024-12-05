@@ -1,40 +1,18 @@
 import React, { ReactNode, useContext, useMemo } from 'react';
-import { Flex, Layout as AntLayout } from 'antd';
+import { Layout as AntLayout } from 'antd';
 import ThemeContext from '../../contexts/ThemeContext';
-import Logo from '../logo/Logo';
-import ThemeSwitch from '../theme-switch/ThemeSwitch';
-import LanguageSelect from '../language-select/LanguageSelect';
-import Login from '../login/Login';
-import ProfileButton from '../profile-button/ProfileButton';
+import Header from 'src/components/header/Header';
 
-const { Header: AntHeader, Content } = AntLayout;
+const { Content } = AntLayout;
 
 interface LayoutProps {
   children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps): ReactNode {
-  const { palette, theme } = useContext(ThemeContext);
+  const { palette } = useContext(ThemeContext);
 
-  const { headerStyle, contentStyle, layoutStyle } = useMemo(() => {
-    const headerStyle: React.CSSProperties = {
-      position: 'fixed',
-      top: 0,
-      zIndex: 1,
-      textAlign: 'center',
-      color: palette.fontColor,
-      height: 60,
-      width: '100%',
-      paddingInline: 0,
-      lineHeight: '60px',
-      backgroundColor: palette.background,
-      borderBottom: `1px solid ${theme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)'}`,
-      padding: '15px 20px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    };
-
+  const { contentStyle, layoutStyle } = useMemo(() => {
     const contentStyle: React.CSSProperties = {
       textAlign: 'center',
       lineHeight: '120px',
@@ -53,20 +31,12 @@ export default function Layout({ children }: LayoutProps): ReactNode {
       alignItems: 'center',
       justifyContent: 'flex-start',
     };
-    return { headerStyle, contentStyle, layoutStyle };
-  }, [palette.background, palette.fontColor, theme]);
+    return { contentStyle, layoutStyle };
+  }, [palette.background, palette.fontColor]);
 
   return (
     <AntLayout style={layoutStyle}>
-      <AntHeader style={headerStyle}>
-        <Logo />
-        <Flex vertical={false} gap={16} justify={'flex-end'} align={'center'}>
-          <ProfileButton />
-          <Login />
-          <ThemeSwitch />
-          <LanguageSelect />
-        </Flex>
-      </AntHeader>
+      <Header />
       <Content style={contentStyle}>{children}</Content>
     </AntLayout>
   );
