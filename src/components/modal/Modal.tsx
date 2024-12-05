@@ -1,15 +1,17 @@
-import React, { ReactNode } from 'react';
-import { Button, Typography, Modal as AntModal } from 'antd';
+import React, { ReactNode, useContext } from 'react';
+import { Modal as AntModal, Typography } from 'antd';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import ThemeContext from 'src/contexts/ThemeContext';
 
 interface ModalProps {
   visible: boolean;
   setVisible: (visible: boolean) => void;
-  message: string;
+  children: ReactNode;
 }
 
-export default function Modal({ visible, setVisible, message }: ModalProps): ReactNode {
+export default function Modal({ visible, setVisible, children }: ModalProps): ReactNode {
+  const { palette } = useContext(ThemeContext);
   const { t } = useTranslation();
 
   const handleClose = () => {
@@ -19,18 +21,20 @@ export default function Modal({ visible, setVisible, message }: ModalProps): Rea
   return visible
     ? createPortal(
         <AntModal
-          title="Модальное окно"
+          title={<Typography style={{ color: palette.fontColor }}>{t('operations.modalTitle')}</Typography>}
+          centered
           open={visible}
-          onOk={handleClose}
-          onCancel={handleClose}
           closeIcon
-          footer={[
-            <Button key="submit" type="primary" onClick={handleClose}>
-              {t('ok')}
-            </Button>,
-          ]}
+          onCancel={handleClose}
+          footer={[]}
+          width={650}
+          styles={{
+            content: { backgroundColor: palette.background, color: palette.fontColor },
+            body: { minHeight: 402 },
+            header: { backgroundColor: palette.background, color: palette.fontColor },
+          }}
         >
-          <Typography>{message}</Typography>
+          {children}
         </AntModal>,
         document.body
       )

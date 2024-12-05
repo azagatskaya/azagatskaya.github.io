@@ -7,7 +7,7 @@ const meta: Meta<typeof Modal> = {
   tags: ['autodocs'],
   argTypes: {
     visible: { type: 'boolean' },
-    message: { type: 'string' },
+    children: { type: 'function' },
   },
 };
 

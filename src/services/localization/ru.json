@@ -6,6 +6,8 @@
     "ok": "ОК",
     "showMoreButton": "Показать еще",
     "operations": {
+      "listTitle": "Операции",
+      "modalTitle": "Просмотр/редактирование операции",
       "title": "Операция",
       "cost": "Трата",
       "profit": "Доход",
@@ -20,6 +22,10 @@
     "dateAsc" : "Сначала новые",
     "dateDesc" : "Сначала старые",
     "amountAsc" : "По сумме (возрастание)",
-    "amountDesc" : "По сумме (убывание)"
+    "amountDesc" : "По сумме (убывание)",
+    "profileButton": "Профиль",
+    "loginButton": "Логин",
+    "logoutButton": "Выход"
+
   }
 }

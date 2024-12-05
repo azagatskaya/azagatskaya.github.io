@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import RangeSlider from 'src/components/range-slider/RangeSlider';
 import AmountSorting from 'src/components/amount-sorting/AmountSorting';
 import OperationCompact from 'src/components/operation/operation-compact/OperationCompact';
+import Modal from 'src/components/modal/Modal';
+import OperationFull, { OperationProps } from 'src/components/operation/operation-full/OperationFull';
 
 export enum AmountSortingEnum {
   dateAsc = 'dateAsc',
@@ -13,15 +15,13 @@ export enum AmountSortingEnum {
   amountDesc = 'amountDesc',
 }
 
-export type AmountSortingType = Record<AmountSortingEnum, string>;
-
 export type RangeType = {
   min: number;
   max: number;
 };
 
 export const AMOUNT_MIN = 0;
-export const AMOUNT_MAX = 10_000;
+export const AMOUNT_MAX = 1_000_000;
 
 const defaultAmountRange = { min: AMOUNT_MIN, max: AMOUNT_MAX };
 
@@ -30,6 +30,9 @@ export default function OperationList(): ReactNode {
   const [range, setRange] = useState<RangeType>(defaultAmountRange);
   const [operations, setOperations] = useState<Operation[]>(createRandomOperations(10));
   const [sorting, setSorting] = useState<AmountSortingEnum>(AmountSortingEnum.dateAsc);
+  const [operationOpen, setOperationOpen] = useState(false);
+  const [operation, setOperation] = useState<Operation>(null);
+
   const handleShowMoreCLick = () => {
     setOperations((prevState) => [...prevState, ...createRandomOperations(10)]);
   };
@@ -58,6 +61,17 @@ export default function OperationList(): ReactNode {
     [sorting]
   );
 
+  const handleItemChange = (values: OperationProps) => {
+    const itemIndex = operations.findIndex((op) => op.id === values.id);
+    let updatedItem = { ...operations[itemIndex] };
+    Object.entries(values).map(([key, val]) => {
+      if (updatedItem[key as keyof OperationProps] !== val) {
+        updatedItem = { ...updatedItem, [key as keyof OperationProps]: key === 'amount' ? +val : val };
+      }
+    });
+    setOperations((prevState) => [...prevState.slice(0, itemIndex), updatedItem, ...prevState.slice(itemIndex + 1)]);
+  };
+
   const filteredData = useMemo(() => {
     return operations
       .filter((op) => op.amount >= range.min && op.amount <= range.max)
@@ -65,21 +79,46 @@ export default function OperationList(): ReactNode {
   }, [operationComparator, operations, range.max, range.min]);
 
   const items = useMemo(() => {
-    return filteredData.map(({ id, amount, name, desc, category: { name: catName } }) => (
-      <OperationCompact key={id} amount={amount} categoryName={catName} name={name} desc={desc} />
+    return filteredData.map((op) => (
+      <OperationCompact
+        key={op.id}
+        amount={op.amount}
+        categoryName={op.category.name}
+        name={op.name}
+        desc={op.desc}
+        handleClick={() => {
+          setOperation(op);
+          setOperationOpen(true);
+        }}
+      />
     ));
   }, [filteredData]);
 
   return (
-    <Flex gap={16} wrap style={{ width: 616 }}>
-      <Flex gap={16} style={{ width: '100%', height: 48 }} dir={'row'} justify={'space-between'} align={'center'}>
-        <RangeSlider range={range} onChange={handleRangeChange} />
-        <AmountSorting value={sorting} onChange={handleChangeSorting} />
+    <>
+      <Flex gap={16} wrap style={{ width: 616 }}>
+        <Flex gap={16} style={{ width: '100%', height: 48 }} dir={'row'} justify={'space-between'} align={'center'}>
+          <RangeSlider range={range} onChange={handleRangeChange} />
+          <AmountSorting value={sorting} onChange={handleChangeSorting} />
+        </Flex>
+        {items}
+        <Button variant={'solid'} color={'primary'} onClick={handleShowMoreCLick} style={{ width: '100%' }}>
+          {t('showMoreButton')}
+        </Button>
       </Flex>
-      {items}
-      <Button variant={'solid'} color={'primary'} onClick={handleShowMoreCLick} style={{ width: '100%' }}>
-        {t('showMoreButton')}
-      </Button>
-    </Flex>
+      {operationOpen ? (
+        <Modal visible={operationOpen} setVisible={setOperationOpen}>
+          <OperationFull
+            id={operation.id}
+            amount={operation.amount}
+            categoryName={operation.category.name}
+            name={operation.name}
+            desc={operation.desc}
+            createdAt={operation.createdAt}
+            handleItemChange={handleItemChange}
+          />
+        </Modal>
+      ) : null}
+    </>
   );
 }
