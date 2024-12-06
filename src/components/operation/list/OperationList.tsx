@@ -7,6 +7,8 @@ import AmountSorting from 'src/components/amount-sorting/AmountSorting';
 import OperationCompact from 'src/components/operation/operation-compact/OperationCompact';
 import Modal from 'src/components/modal/Modal';
 import OperationFull, { OperationProps } from 'src/components/operation/operation-full/OperationFull';
+import { getId } from 'src/homeworks/ts1/mock/products';
+import dayjs from 'dayjs';
 
 export enum AmountSortingEnum {
   dateAsc = 'dateAsc',
@@ -21,9 +23,18 @@ export type RangeType = {
 };
 
 export const AMOUNT_MIN = 0;
-export const AMOUNT_MAX = 10_000;
+export const AMOUNT_MAX = 1_000_000;
 
 const defaultAmountRange = { min: AMOUNT_MIN, max: AMOUNT_MAX };
+
+const defaultOperation: Operation = {
+  id: `pr_${getId(6)}`,
+  name: 'Трата',
+  createdAt: dayjs(new Date()).format('YYYY-MM-DD'),
+  amount: 0,
+  category: { id: '', name: '' },
+  type: 'Cost',
+};
 
 export default function OperationList(): ReactNode {
   const { t } = useTranslation();
@@ -43,6 +54,11 @@ export default function OperationList(): ReactNode {
 
   const handleChangeSorting = (value: AmountSortingEnum): void => {
     setSorting(value);
+  };
+
+  const handleAddOperationClick = (): void => {
+    setOperation(defaultOperation);
+    setOperationOpen(true);
   };
 
   const operationComparator = useCallback(
@@ -69,13 +85,17 @@ export default function OperationList(): ReactNode {
 
   const handleItemChange = (values: OperationProps) => {
     const itemIndex = operations.findIndex((op) => op.id === values.id);
-    let updatedItem = { ...operations[itemIndex] };
-    Object.entries(values).map(([key, val]) => {
-      if (updatedItem[key as keyof OperationProps] !== val) {
-        updatedItem = { ...updatedItem, [key as keyof OperationProps]: key === 'amount' ? +val : val };
-      }
-    });
-    setOperations((prevState) => [...prevState.slice(0, itemIndex), updatedItem, ...prevState.slice(itemIndex + 1)]);
+    if (itemIndex > -1) {
+      let updatedItem = { ...operations[itemIndex] };
+      Object.entries(values).map(([key, val]) => {
+        if (updatedItem[key as keyof OperationProps] !== val) {
+          updatedItem = { ...updatedItem, [key as keyof OperationProps]: key === 'amount' ? +val : val };
+        }
+      });
+      setOperations((prevState) => [...prevState.slice(0, itemIndex), updatedItem, ...prevState.slice(itemIndex + 1)]);
+    } else {
+      setOperations((prevState) => [...prevState, { ...defaultOperation, ...values }]);
+    }
   };
 
   const filteredData = useMemo(() => {
@@ -107,6 +127,9 @@ export default function OperationList(): ReactNode {
           <RangeSlider range={range} onChange={handleRangeChange} maxValue={maxSliderValue} />
           <AmountSorting value={sorting} onChange={handleChangeSorting} />
         </Flex>
+        <Button variant={'solid'} color={'primary'} onClick={handleAddOperationClick} style={{ width: '100%' }}>
+          {t('operations.addButton')}
+        </Button>
         {items}
         <Button variant={'solid'} color={'primary'} onClick={handleShowMoreCLick} style={{ width: '100%' }}>
           {t('showMoreButton')}

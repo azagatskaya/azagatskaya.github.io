@@ -119,7 +119,6 @@ export default function OperationFull({
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      console.log('values', values);
       onFinish(values);
       handleItemChange({ ...values, createdAt, id });
       handleToggleMode();
