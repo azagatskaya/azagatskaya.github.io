@@ -8,6 +8,7 @@
     "operations": {
       "listTitle": "Operations",
       "modalTitle": "Operation preview/editing",
+      "addButton": "Add operation",
       "title": "Operation",
       "cost": "Cost",
       "profit": "Profit",
