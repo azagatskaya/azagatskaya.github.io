@@ -8,8 +8,9 @@ const { Text } = Typography;
 interface RangeSliderProps {
   range: RangeType;
   onChange: (range: number[]) => void;
+  maxValue: number;
 }
-export default function RangeSlider({ range: { min, max }, onChange }: RangeSliderProps) {
+export default function RangeSlider({ range: { min, max }, onChange, maxValue }: RangeSliderProps) {
   const { palette } = useContext(ThemeContext);
   const { t } = useTranslation();
 
@@ -18,7 +19,7 @@ export default function RangeSlider({ range: { min, max }, onChange }: RangeSlid
       <Text strong style={{ width: 80, color: palette.fontColor }}>
         {t('rangeSliderLabel')}
       </Text>
-      <Slider range defaultValue={[min, max]} style={styles} onChange={onChange} min={AMOUNT_MIN} max={AMOUNT_MAX} />
+      <Slider range defaultValue={[min, max]} style={styles} onChange={onChange} min={AMOUNT_MIN} max={maxValue} />
     </>
   );
 }

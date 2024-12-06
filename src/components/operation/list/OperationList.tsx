@@ -21,7 +21,7 @@ export type RangeType = {
 };
 
 export const AMOUNT_MIN = 0;
-export const AMOUNT_MAX = 1_000_000;
+export const AMOUNT_MAX = 10_000;
 
 const defaultAmountRange = { min: AMOUNT_MIN, max: AMOUNT_MAX };
 
@@ -61,6 +61,12 @@ export default function OperationList(): ReactNode {
     [sorting]
   );
 
+  const maxSliderValue = useMemo(() => {
+    return operations.reduce((acc, op) => {
+      return op.amount > acc ? op.amount : acc;
+    }, 0);
+  }, [operations]);
+
   const handleItemChange = (values: OperationProps) => {
     const itemIndex = operations.findIndex((op) => op.id === values.id);
     let updatedItem = { ...operations[itemIndex] };
@@ -98,7 +104,7 @@ export default function OperationList(): ReactNode {
     <>
       <Flex gap={16} wrap style={{ width: 616 }}>
         <Flex gap={16} style={{ width: '100%', height: 48 }} dir={'row'} justify={'space-between'} align={'center'}>
-          <RangeSlider range={range} onChange={handleRangeChange} />
+          <RangeSlider range={range} onChange={handleRangeChange} maxValue={maxSliderValue} />
           <AmountSorting value={sorting} onChange={handleChangeSorting} />
         </Flex>
         {items}
