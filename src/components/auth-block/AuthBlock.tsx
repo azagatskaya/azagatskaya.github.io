@@ -1,5 +1,7 @@
 import { Button, Card, Form, type FormProps, Input } from 'antd';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 type FormFieldsType = {
   email: string;
@@ -12,6 +14,8 @@ enum AuthBlockModeEnum {
 }
 
 export default function AuthBlock() {
+  const { palette } = useContext<ThemeContextType>(ThemeContext);
+  const { t } = useTranslation();
   const [mode, setMode] = useState<AuthBlockModeEnum>(AuthBlockModeEnum.SignIn);
   const [form] = Form.useForm();
 
@@ -32,14 +36,14 @@ export default function AuthBlock() {
 
   return (
     <Card
-      title={mode === 'signin' ? 'Sign In' : 'Sign Up'}
+      title={mode === 'signin' ? t('auth.signIn') : t('auth.signUp')}
       extra={
         <Button color="primary" variant="link" onClick={handleToggleMode}>
-          {mode === 'signin' ? 'Sign Up' : 'Sign In'}
+          {mode === 'signin' ? t('auth.signUp') : t('auth.signIn')}
         </Button>
       }
-      style={{ width: '100%', maxWidth: 616, marginBottom: 8 }}
-      styles={{ title: { flex: 'none' } }}
+      style={{ width: '100%', maxWidth: 616, marginBottom: 8, backgroundColor: palette.background }}
+      styles={{ title: { flex: 'none', color: palette.fontColor } }}
     >
       <Form
         form={form}
@@ -50,31 +54,32 @@ export default function AuthBlock() {
         autoComplete="off"
       >
         <Form.Item<FormFieldsType>
-          label="Email"
+          label={<label style={{ color: palette.fontColor }}>{t('auth.email')}</label>}
           name="email"
           rules={[
             {
               type: 'email',
-              message: 'Некорректный email',
+              message: t('auth.msgWrongEmailFormat'),
             },
-            { required: true, message: 'Поле не должно быть пустым' },
+            { required: true, message: t('auth.msgRequiredField') },
           ]}
         >
-          <Input />
+          s
+          <Input style={{ color: palette.fontColor, backgroundColor: palette.background }} />
         </Form.Item>
         <Form.Item<FormFieldsType>
-          label="Password"
+          label={<label style={{ color: palette.fontColor }}>{t('auth.password')}</label>}
           name="password"
           rules={[
-            { min: 8, message: 'Длина пароля должна быть не менее 8 символов' },
-            { required: true, message: 'Поле не должно быть пустым' },
+            { min: 8, message: t('auth.msgPasswordMinLength') },
+            { required: true, message: t('auth.msgRequiredField') },
           ]}
         >
-          <Input.Password />
+          <Input.Password style={{ color: palette.fontColor, backgroundColor: palette.background }} />
         </Form.Item>
         <Form.Item label={null} style={{ marginTop: 16 }}>
           <Button block type="primary" htmlType="submit">
-            {mode === 'signin' ? 'Sign In' : 'Sign Up'}
+            {mode === 'signin' ? t('auth.signIn') : t('auth.signUp')}
           </Button>
         </Form.Item>
       </Form>

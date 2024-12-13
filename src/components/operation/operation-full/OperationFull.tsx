@@ -1,12 +1,13 @@
 import React, { ReactNode, useContext, useReducer, useState } from 'react';
-import { Category, Operation } from '../../../homeworks/ts1/3_write';
+import { Category, Operation } from 'src/homeworks/ts1/3_write';
 import { RenameTypeField } from '../../operation/lib/renameTypeField';
 import { Button, Card, DatePicker, Form, Input, Typography } from 'antd';
 import type { FormProps } from 'antd';
-import ThemeContext from '../../../contexts/ThemeContext';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
+import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
+import { getId } from 'src/homeworks/ts1/mock/products';
 const { TextArea } = Input;
 
 type FieldType = {
@@ -83,8 +84,8 @@ export default function OperationFull({
   createdAt,
   handleItemChange,
 }: OperationFullProps): ReactNode {
-  const { palette } = useContext(ThemeContext);
-  const [mode, setMode] = useState<ModeType>('preview');
+  const { palette } = useContext<ThemeContextType>(ThemeContext);
+  const [mode, setMode] = useState<ModeType>(id === 'create' ? 'edit' : 'preview');
   const { t } = useTranslation();
   const [opState, dispatchOpState] = useReducer(opStateReducer, {
     amount: amount ?? 0,
@@ -120,7 +121,7 @@ export default function OperationFull({
     try {
       const values = await form.validateFields();
       onFinish(values);
-      handleItemChange({ ...values, createdAt, id });
+      handleItemChange({ ...values, createdAt, id: id === 'create' ? `pr_${getId(6)}` : id });
       handleToggleMode();
     } catch (e) {
       onFinishFailed(e);
@@ -162,7 +163,7 @@ export default function OperationFull({
           rules={[
             {
               type: 'date',
-              message: 'Некорректная дата',
+              message: t('operations.msgIncorrectDate'),
             },
             { required: true, message: msgRequiredField },
           ]}
@@ -190,7 +191,7 @@ export default function OperationFull({
           label={<label style={{ color: palette.fontColor }}>{t('operations.operationName')}</label>}
           rules={[
             { required: true, message: msgRequiredField },
-            { max: 32, message: 'Максимальное количество символов: 32' },
+            { max: 32, message: t('operations.msgNameMaxLength') },
           ]}
         >
           {mode === 'edit' ? (
@@ -239,7 +240,7 @@ export default function OperationFull({
           label={<label style={{ color: palette.fontColor }}>{t('operations.categoryName')}</label>}
           rules={[
             { required: true, message: msgRequiredField },
-            { max: 32, message: 'Максимальное количество символов: 32' },
+            { max: 32, message: t('operations.msgCatNameMaxLength') },
           ]}
         >
           {mode === 'edit' ? (
@@ -262,7 +263,7 @@ export default function OperationFull({
           name="desc"
           initialValue={opState.desc}
           label={<label style={{ color: palette.fontColor }}>{t('operations.description')}</label>}
-          rules={[{ max: 256, message: 'Максимальное количество символов: 256' }]}
+          rules={[{ max: 256, message: t('operations.msgDescMaxLength') }]}
         >
           {mode === 'edit' ? (
             <TextArea
@@ -293,7 +294,7 @@ export default function OperationFull({
               color: '#fff',
               backgroundColor: mode !== 'edit' ? '#1677FF' : palette.success,
             }}
-            icon={<CheckCircleOutlined />}
+            icon={mode === 'edit' ? <CheckCircleOutlined /> : <EditOutlined />}
           >
             {t(mode === 'edit' ? 'save' : 'edit')}
           </Button>

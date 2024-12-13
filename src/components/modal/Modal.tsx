@@ -1,22 +1,35 @@
-import React, { ReactNode, useContext } from 'react';
+import React, { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Modal as AntModal, Typography } from 'antd';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import ThemeContext from 'src/contexts/ThemeContext';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
+import { useNavigate, useParams } from 'react-router';
+import { defaultOperation, OperationsContext, OperationsContextType } from 'src/contexts/OperationsContext';
+import OperationFull from 'src/components/operation/operation-full/OperationFull';
+import { CloseOutlined } from '@ant-design/icons';
 
-interface ModalProps {
-  visible: boolean;
-  setVisible: (visible: boolean) => void;
-  children: ReactNode;
-}
-
-export default function Modal({ visible, setVisible, children }: ModalProps): ReactNode {
-  const { palette } = useContext(ThemeContext);
+export default function Modal(): ReactNode {
+  const { operationId } = useParams();
+  const { palette } = useContext<ThemeContextType>(ThemeContext);
+  const { operations, handleItemChange } = useContext<OperationsContextType>(OperationsContext);
   const { t } = useTranslation();
+  const [visible, setVisible] = useState(false);
+  const navigate = useNavigate();
 
-  const handleClose = () => {
+  useEffect(() => {
+    setVisible(!!operationId);
+  }, [operationId]);
+
+  const handleClose = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setVisible(false);
+    navigate('/operations');
   };
+
+  const operation = useMemo(() => {
+    return visible && operationId && operationId !== 'create'
+      ? operations.find((op) => op.id === operationId)
+      : defaultOperation;
+  }, [operationId, operations, visible]);
 
   return visible
     ? createPortal(
@@ -24,7 +37,7 @@ export default function Modal({ visible, setVisible, children }: ModalProps): Re
           title={<Typography style={{ color: palette.fontColor }}>{t('operations.modalTitle')}</Typography>}
           centered
           open={visible}
-          closeIcon
+          closeIcon={<CloseOutlined style={{ color: palette.fontColorDisabled }} />}
           onCancel={handleClose}
           footer={[]}
           width={650}
@@ -34,7 +47,19 @@ export default function Modal({ visible, setVisible, children }: ModalProps): Re
             header: { backgroundColor: palette.background, color: palette.fontColor },
           }}
         >
-          {children}
+          {operation ? (
+            <OperationFull
+              id={operationId}
+              amount={operation.amount}
+              categoryName={operation.category.name}
+              name={operation.name}
+              desc={operation.desc}
+              createdAt={operation.createdAt}
+              handleItemChange={handleItemChange}
+            />
+          ) : (
+            <Typography style={{ color: palette.fontColor }}>{t('operations.msgUnknownOperationId')}</Typography>
+          )}
         </AntModal>,
         document.body
       )

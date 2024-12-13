@@ -16,7 +16,12 @@
       "description": "Описание",
       "categoryName": "Категория",
       "operationName": "Название операции",
-      "createdAt": "Дата"
+      "createdAt": "Дата",
+      "msgNameMaxLength": "Максимальное количество символов: 32",
+      "msgCatNameMaxLength": "Максимальное количество символов: 32",
+      "msgDescMaxLength": "Максимальное количество символов: 256",
+      "msgIncorrectDate": "Некорректная дата",
+      "msgUnknownOperationId": "Неизвестный номер операции"
     },
     "rangeSliderLabel": "Сумма",
     "sorting": "Сортировка",
@@ -26,7 +31,32 @@
     "amountDesc" : "По сумме (убывание)",
     "profileButton": "Профиль",
     "loginButton": "Логин",
-    "logoutButton": "Выход"
+    "logoutButton": "Выход",
+    "profile": {
+      "formTitle": "Профиль",
+      "nickname": "Псевдоним",
+      "about": "О себе",
+      "password": "Пароль",
+      "newPassword": "Новый пароль",
+      "newPasswordCheck": "Повторите пароль",
+      "changePassword": "Изменить пароль",
+      "msgRequiredField": "Поле не должно быть пустым",
+      "msgAboutMaxLength": "Длина не должна превышать 256 символов",
+      "msgNicknameMaxLength": "Длина не должна превышать 32 символов",
+      "msgPasswordMaxLength": "Длина не должна превышать 56 символов",
+      "msgPasswordMinLength": "Минимальная длина пароля 8 символов",
+      "msgPasswordsNotMatched": "Пароли не совпадают",
+      "msgSameNewPassword": "Новый пароль должен отличаться от текущего"
+    },
+    "auth": {
+      "email": "Email",
+      "password": "Пароль",
+      "signIn": "Войти",
+      "signUp": "Зарегистрироваться",
+      "msgWrongEmailFormat": "Некорректный email",
+      "msgRequiredField": "Поле не должно быть пустым",
+      "msgPasswordMinLength": "Длина пароля должна быть не менее 8 символов"
+    }
 
   }
 }

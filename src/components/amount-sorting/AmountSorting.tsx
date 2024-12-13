@@ -1,19 +1,16 @@
-import React, { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useContext, useMemo } from 'react';
 import { ArrowDownOutlined, ArrowUpOutlined, DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { AmountSortingEnum } from 'src/components/operation/list/OperationList';
+import { AmountSortingEnum, OperationsContext, OperationsContextType } from 'src/contexts/OperationsContext';
 
-interface AmountSortingProps {
-  value: AmountSortingEnum;
-  onChange: (value: AmountSortingEnum) => void;
-}
-export default function AmountSorting({ value, onChange }: AmountSortingProps): ReactNode {
+export default function AmountSorting(): ReactNode {
   const { t } = useTranslation();
+  const { sorting, handleSortingChange } = useContext<OperationsContextType>(OperationsContext);
 
   const onClick: MenuProps['onClick'] = ({ key }) => {
-    onChange(key as AmountSortingEnum);
+    handleSortingChange(key as AmountSortingEnum);
   };
 
   const items: MenuProps['items'] = useMemo(() => {
@@ -43,7 +40,7 @@ export default function AmountSorting({ value, onChange }: AmountSortingProps): 
 
   return (
     <Dropdown
-      menu={{ items, selectable: true, defaultSelectedKeys: [value], onClick }}
+      menu={{ items, selectable: true, defaultSelectedKeys: [sorting], onClick }}
       trigger={['click']}
       overlayStyle={{ height: 48 }}
     >

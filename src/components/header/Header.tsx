@@ -1,7 +1,7 @@
 import React, { CSSProperties, ReactNode, useContext, useMemo } from 'react';
 import Logo from '../logo/Logo';
 import ThemeSwitch from '../theme-switch/ThemeSwitch';
-import ThemeContext from '../../contexts/ThemeContext';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import LanguageSelect from '../language-select/LanguageSelect';
 import { Button, Flex, Layout as AntLayout } from 'antd';
 import Login from 'src/components/login/Login';
@@ -23,7 +23,7 @@ const style: React.CSSProperties = {
 
 export default function Header(): ReactNode {
   const { t } = useTranslation();
-  const { palette, theme } = useContext(ThemeContext);
+  const { palette, theme } = useContext<ThemeContextType>(ThemeContext);
 
   const headerStyle: CSSProperties = useMemo(() => {
     return {

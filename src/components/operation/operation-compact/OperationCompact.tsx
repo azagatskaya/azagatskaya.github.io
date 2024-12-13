@@ -2,12 +2,12 @@ import React, { CSSProperties, ReactNode, useContext, useEffect, useMemo, useRef
 import { Card, Typography } from 'antd';
 import { Category, Operation } from 'src/homeworks/ts1/3_write';
 import { RenameTypeField } from '../../operation/lib/renameTypeField';
-import ThemeContext from '../../../contexts/ThemeContext';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 
 type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
 type OperationProps = Pick<Operation, 'amount' | 'name' | 'desc'>;
-type OperationCompactProps = OperationProps & RenamedCatName & Record<'handleClick', () => void>;
+type OperationCompactProps = OperationProps & RenamedCatName;
 
 const styles = {
   operationName: {
@@ -58,14 +58,8 @@ const useMountTransition = (isMounted: boolean, unmountDelay: number) => {
   return hasTransitionedIn;
 };
 
-export default function OperationCompact({
-  amount,
-  categoryName,
-  name,
-  desc,
-  handleClick,
-}: OperationCompactProps): ReactNode {
-  const { palette } = useContext(ThemeContext);
+export default function OperationCompact({ amount, categoryName, name, desc }: OperationCompactProps): ReactNode {
+  const { palette } = useContext<ThemeContextType>(ThemeContext);
   const [cardHeight, setCardHeight] = useState(MIN_CARD_HEIGHT);
   const [isMounted, setIsMounted] = useState(false);
   const hasTransitionedIn = useMountTransition(isMounted, 1000);
@@ -111,17 +105,12 @@ export default function OperationCompact({
     };
   }, []);
 
-  const handleClickOperation = () => {
-    handleClick();
-  };
-
   return (
     <Card
       ref={root}
       title={<Typography style={styles.amount}>{`\u20bd ${amount}`}</Typography>}
       extra={<Typography style={styles.operationName}>{name}</Typography>}
       size="small"
-      onClick={handleClickOperation}
       style={{
         width: 300,
         textAlign: 'left',

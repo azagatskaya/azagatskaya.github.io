@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext } from 'react';
 import { Flex, Radio } from 'antd';
 import { MoonFilled, MoonOutlined, SunFilled, SunOutlined } from '@ant-design/icons/lib/icons';
-import ThemeContext, { ThemeType } from '../../contexts/ThemeContext';
+import { ThemeContext, ThemeContextType, ThemeType } from '../../contexts/ThemeContext';
 import { RadioChangeEvent } from 'antd/lib';
 
 const DarkThemeIcon = ({ theme }: { theme: ThemeType }): ReactNode => {
@@ -13,7 +13,7 @@ const LightThemeIcon = ({ theme }: { theme: ThemeType }): ReactNode => {
 };
 
 export default function ThemeSwitch(): ReactNode {
-  const { setTheme, theme, palette } = useContext(ThemeContext);
+  const { setTheme, theme, palette } = useContext<ThemeContextType>(ThemeContext);
 
   const handleChangeTheme = (e: RadioChangeEvent) => {
     setTheme((e.target as HTMLInputElement).value as ThemeType);

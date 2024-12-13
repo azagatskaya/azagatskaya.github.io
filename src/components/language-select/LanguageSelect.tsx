@@ -1,12 +1,12 @@
 import { GlobalOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import React, { ReactNode, useContext } from 'react';
-import ThemeContext from '../../contexts/ThemeContext';
-import LocalizationContext from '../../contexts/LocalizationContext';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
+import { LocalizationContext, LangContextType } from 'src/contexts/LocalizationContext';
 
 export default function LanguageSelect(): ReactNode {
-  const { theme } = useContext(ThemeContext);
-  const { lang, setLang } = useContext(LocalizationContext);
+  const { theme } = useContext<ThemeContextType>(ThemeContext);
+  const { lang, setLang } = useContext<LangContextType>(LocalizationContext);
 
   return (
     <Menu

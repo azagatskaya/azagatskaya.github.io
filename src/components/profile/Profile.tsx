@@ -1,5 +1,7 @@
 import { Button, Card, Form, type FormProps, Input } from 'antd';
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 
 type ProfileFieldsType = {
   nickname: string;
@@ -13,6 +15,8 @@ type PasswordFieldsType = {
 };
 
 export default function Profile() {
+  const { palette } = useContext<ThemeContextType>(ThemeContext);
+  const { t } = useTranslation();
   const [profileForm] = Form.useForm();
   const [pwdChangeForm] = Form.useForm();
 
@@ -34,43 +38,54 @@ export default function Profile() {
     console.log('Submit fail:', errorInfo);
   };
 
+  const styles = useMemo(() => {
+    return {
+      textField: { color: palette.fontColor, backgroundColor: palette.background },
+    };
+  }, [palette.fontColor, palette.background]);
+
   return (
     <Card
-      title={'Profile'}
-      style={{ width: '100%', maxWidth: 616, marginBottom: 8 }}
-      styles={{ title: { flex: 'none' } }}
+      title={t('profile.formTitle')}
+      style={{
+        width: '100%',
+        maxWidth: 616,
+        marginBottom: 8,
+        backgroundColor: palette.background,
+      }}
+      styles={{ title: { flex: 'none', color: palette.fontColor } }}
     >
       <Form
         form={profileForm}
         layout="vertical"
-        style={{ maxWidth: 614, minWidth: 377 }}
+        style={{ maxWidth: 614, minWidth: 377, color: palette.fontColor }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item<ProfileFieldsType>
-          label="Псевдоним"
+          label={<label style={{ color: palette.fontColor }}>{t('profile.nickname')}</label>}
           name="nickname"
           rules={[
-            { max: 32, message: 'Длина не должна превышать 32 символов' },
-            { required: true, message: 'Поле не должно быть пустым' },
+            { max: 32, message: t('profile.msgNicknameMaxLength') },
+            { required: true, message: t('profile.msgRequiredField') },
           ]}
         >
-          <Input />
+          <Input style={styles.textField} />
         </Form.Item>
         <Form.Item<ProfileFieldsType>
-          label="О себе"
+          label={<label style={{ color: palette.fontColor }}>{t('profile.about')}</label>}
           name="about"
           rules={[
-            { max: 256, message: 'Длина не должна превышать 256 символов' },
-            { required: true, message: 'Поле не должно быть пустым' },
+            { max: 256, message: t('profile.msgAboutMaxLength') },
+            { required: true, message: t('profile.msgRequiredField') },
           ]}
         >
-          <Input />
+          <Input style={styles.textField} />
         </Form.Item>
         <Form.Item label={null} style={{ marginTop: 16 }}>
           <Button block type="primary" htmlType="submit">
-            {'Сохранить'}
+            {t('save')}
           </Button>
         </Form.Item>
       </Form>
@@ -83,57 +98,57 @@ export default function Profile() {
         autoComplete="off"
       >
         <Form.Item<PasswordFieldsType>
-          label="Пароль"
+          label={<label style={{ color: palette.fontColor }}>{t('profile.password')}</label>}
           name="password"
           rules={[
-            { min: 8, message: 'Минимальная длина пароля 8 символов' },
-            { max: 56, message: 'Длина не должна превышать 56 символов' },
-            { required: true, message: 'Поле не должно быть пустым' },
+            { min: 8, message: t('profile.msgPasswordMinLength') },
+            { max: 56, message: t('profile.msgPasswordMaxLength') },
+            { required: true, message: t('profile.msgRequiredField') },
           ]}
         >
-          <Input.Password />
+          <Input.Password style={styles.textField} />
         </Form.Item>
         <Form.Item<PasswordFieldsType>
-          label="Новый пароль"
+          label={<label style={{ color: palette.fontColor }}>{t('profile.newPassword')}</label>}
           name="newPassword"
           dependencies={['password']}
           rules={[
-            { min: 8, message: 'Минимальная длина пароля 8 символов' },
-            { max: 56, message: 'Длина не должна превышать 56 символов' },
-            { required: true, message: 'Поле не должно быть пустым' },
+            { min: 8, message: t('profile.msgPasswordMinLength') },
+            { max: 56, message: t('profile.msgPasswordMaxLength') },
+            { required: true, message: t('profile.msgRequiredField') },
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if (value !== getFieldValue('password')) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('Новый пароль должен отличаться от текущего'));
+                return Promise.reject(new Error(t('profile.msgSameNewPassword')));
               },
             }),
           ]}
         >
-          <Input.Password />
+          <Input.Password style={styles.textField} />
         </Form.Item>
         <Form.Item<PasswordFieldsType>
-          label="Повторите пароль"
+          label={<label style={{ color: palette.fontColor }}>{t('profile.newPasswordCheck')}</label>}
           name="newPasswordCheck"
           dependencies={['newPassword']}
           rules={[
-            { required: true, message: 'Поле не должно быть пустым' },
+            { required: true, message: t('profile.msgRequiredField') },
             ({ getFieldValue }) => ({
               validator(_, value) {
                 if ((!value && !getFieldValue('newPassword')) || getFieldValue('newPassword') === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(new Error('Пароли не совпадают'));
+                return Promise.reject(new Error(t('profile.msgPasswordsNotMatched')));
               },
             }),
           ]}
         >
-          <Input.Password />
+          <Input.Password style={styles.textField} />
         </Form.Item>
         <Form.Item label={null} style={{ marginTop: 16 }}>
           <Button block type="primary" htmlType="submit">
-            {'Изменить пароль'}
+            {t('profile.changePassword')}
           </Button>
         </Form.Item>
       </Form>

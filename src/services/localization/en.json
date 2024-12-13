@@ -16,7 +16,12 @@
       "description": "Description",
       "categoryName": "Category",
       "operationName": "Operation name",
-      "createdAt": "Created at"
+      "createdAt": "Created at",
+      "msgNameMaxLength": "Max length is 32 symbols",
+      "msgCatNameMaxLength": "Max length is 32 symbols",
+      "msgDescMaxLength": "Max length is 256 symbols",
+      "msgIncorrectDate": "Wrong date",
+      "msgUnknownOperationId": "Unknown operation id"
     },
     "rangeSliderLabel": "Amount",
     "sorting": "Sorting",
@@ -26,6 +31,31 @@
     "amountDesc" : "By amount descending",
     "profileButton": "Profile",
     "loginButton": "Login",
-    "logoutButton": "Logout"
+    "logoutButton": "Logout",
+    "profile": {
+      "formTitle": "Profile",
+      "nickname": "Nickname",
+      "about": "About you",
+      "password": "Password",
+      "newPassword": "New password",
+      "newPasswordCheck": "Check password",
+      "changePassword": "Change password",
+      "msgRequiredField": "Required field",
+      "msgAboutMaxLength": "Max length is 256 symbols",
+      "msgNicknameMaxLength": "Max length is 32 symbols",
+      "msgPasswordMaxLength": "Max length is 56 symbols",
+      "msgPasswordMinLength": "Min password length is 8 symbols",
+      "msgPasswordsNotMatched": "Passwords are different",
+      "msgSameNewPassword": "New password must be different from the previous one"
+    },
+    "auth": {
+      "email": "Email",
+      "password": "Password",
+      "signIn": "Sign In",
+      "signUp": "Sign Up",
+      "msgWrongEmailFormat": "Wrong email format",
+      "msgRequiredField": "Required field",
+      "msgPasswordMinLength": "Min password length is 8 symbols"
+    }
   }
 }

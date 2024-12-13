@@ -1,6 +1,6 @@
 import React, { ReactNode, useContext, useMemo } from 'react';
 import { Layout as AntLayout } from 'antd';
-import ThemeContext from '../../contexts/ThemeContext';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import Header from 'src/components/header/Header';
 
 const { Content } = AntLayout;
@@ -10,7 +10,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps): ReactNode {
-  const { palette } = useContext(ThemeContext);
+  const { palette } = useContext<ThemeContextType>(ThemeContext);
 
   const { contentStyle, layoutStyle } = useMemo(() => {
     const contentStyle: React.CSSProperties = {

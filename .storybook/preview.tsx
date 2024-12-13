@@ -1,9 +1,8 @@
 import React from 'react';
 import type { Preview } from '@storybook/react';
-import AuthContext from '../src/contexts/AuthContext';
-import ThemeContext from '../src/contexts/ThemeContext';
-import LocalizationContext from '../src/contexts/LocalizationContext';
-// import { I18nextProvider, useTranslation } from 'react-i18next';
+import AuthContext from 'src/contexts/AuthContext';
+import { ThemeContext } from 'src/contexts/ThemeContext';
+import { LocalizationContext } from 'src/contexts/LocalizationContext';
 
 export const globalTypes = {
   locale: {
