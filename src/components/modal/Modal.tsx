@@ -7,8 +7,9 @@ import { useNavigate, useParams } from 'react-router';
 import { defaultOperation, OperationsContext, OperationsContextType } from 'src/contexts/OperationsContext';
 import OperationFull from 'src/components/operation/operation-full/OperationFull';
 import { CloseOutlined } from '@ant-design/icons';
+import withAuth from 'src/shared/hocs/withAuth';
 
-export default function Modal(): ReactNode {
+export default withAuth(function Modal(): ReactNode {
   const { operationId } = useParams();
   const { palette } = useContext<ThemeContextType>(ThemeContext);
   const { operations, handleItemChange } = useContext<OperationsContextType>(OperationsContext);
@@ -64,4 +65,4 @@ export default function Modal(): ReactNode {
         document.body
       )
     : null;
-}
+});

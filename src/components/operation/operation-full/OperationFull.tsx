@@ -7,7 +7,8 @@ import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';
 import dayjs, { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
-import { getId } from 'src/homeworks/ts1/mock/products';
+import { getId } from 'src/shared/mock/products';
+
 const { TextArea } = Input;
 
 type FieldType = {

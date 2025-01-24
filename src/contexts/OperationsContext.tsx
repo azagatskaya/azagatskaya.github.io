@@ -12,7 +12,7 @@ import React, {
 } from 'react';
 import { createRandomOperations, Operation } from 'src/homeworks/ts1/3_write';
 import { OperationProps } from 'src/components/operation/operation-full/OperationFull';
-import { getId } from 'src/homeworks/ts1/mock/products';
+import { getId } from 'src/shared/mock/products';
 import dayjs from 'dayjs';
 
 export type OperationsContextType = {

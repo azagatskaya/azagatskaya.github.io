@@ -3,6 +3,7 @@ import { Slider, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { AMOUNT_MIN, OperationsContext, OperationsContextType, RangeType } from 'src/contexts/OperationsContext';
+
 const { Text } = Typography;
 
 export default function RangeSlider() {

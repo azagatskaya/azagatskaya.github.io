@@ -6,20 +6,33 @@ import AmountSorting from 'src/components/amount-sorting/AmountSorting';
 import OperationCompact from 'src/components/operation/operation-compact/OperationCompact';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { OperationsContext, OperationsContextType } from 'src/contexts/OperationsContext';
+import { useSelector } from 'react-redux';
+import { AppState } from 'src/store';
 
 export default function OperationList(): ReactNode {
   const { t } = useTranslation();
   const { filteredData, handleShowMoreClick } = useContext<OperationsContextType>(OperationsContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const isAdmin = useSelector((state: AppState) => state.profile?.role);
 
   const handleAddOperationClick = (): void => {
     navigate(`/operations/create`);
   };
 
   const items = useMemo(() => {
-    return filteredData.map((op) => (
-      <Link key={op.id.toString()} to={`/operations/${op.id}`} state={{ previousLocation: location }}>
+    return filteredData.map((op) =>
+      isAdmin ? (
+        <Link key={op.id.toString()} to={`/operations/${op.id}`} state={{ previousLocation: location }}>
+          <OperationCompact
+            key={op.id}
+            amount={op.amount}
+            categoryName={op.category.name ?? ''}
+            name={op.name}
+            desc={op.desc}
+          />
+        </Link>
+      ) : (
         <OperationCompact
           key={op.id}
           amount={op.amount}
@@ -27,8 +40,8 @@ export default function OperationList(): ReactNode {
           name={op.name}
           desc={op.desc}
         />
-      </Link>
-    ));
+      )
+    );
   }, [filteredData, location]);
 
   return (

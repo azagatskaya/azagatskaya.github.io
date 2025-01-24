@@ -11,16 +11,6 @@ import { useTranslation } from 'react-i18next';
 
 const { Header: AntHeader } = AntLayout;
 
-const style: React.CSSProperties = {
-  height: 60,
-  position: 'sticky',
-  top: 0,
-  padding: '15px 20px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-};
-
 export default function Header(): ReactNode {
   const { t } = useTranslation();
   const { palette, theme } = useContext<ThemeContextType>(ThemeContext);

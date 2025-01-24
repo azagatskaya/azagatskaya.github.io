@@ -1,11 +1,17 @@
-import { Button, Card, Form, type FormProps, Input } from 'antd';
+import { Button, Card, Form, type FormProps, Input, Typography } from 'antd';
 import React, { useContext, useState } from 'react';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { generateToken } from 'src/store/slices/token';
+import users from 'src/shared/mock/users';
+import { ProfileType, setProfile } from 'src/store/slices/profile';
+import { useNavigate } from 'react-router';
 
 type FormFieldsType = {
   email: string;
   password: string;
+  passwordCheck?: string;
 };
 
 enum AuthBlockModeEnum {
@@ -18,10 +24,34 @@ export default function AuthBlock() {
   const { t } = useTranslation();
   const [mode, setMode] = useState<AuthBlockModeEnum>(AuthBlockModeEnum.SignIn);
   const [form] = Form.useForm();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const onFinish: FormProps<FormFieldsType>['onFinish'] = (values) => {
     console.log('Submit success:', values);
-    form.resetFields();
+    dispatch(generateToken(values.email));
+
+    const profile = users.find((u) => u.email === values.email);
+    let newProfile: ProfileType;
+
+    switch (mode) {
+      case 'signin':
+        newProfile = { ...profile, ...values };
+        dispatch(setProfile(newProfile));
+        navigate('/operations');
+        break;
+      case 'signup':
+        newProfile = {
+          email: values.email,
+          password: values.password,
+          nickname: null,
+          about: null,
+          role: 0,
+        };
+        users.push(newProfile);
+        dispatch(setProfile(newProfile));
+        navigate('/profile');
+    }
   };
 
   const onFinishFailed: FormProps<FormFieldsType>['onFinishFailed'] = (errorInfo) => {
@@ -45,6 +75,9 @@ export default function AuthBlock() {
       style={{ width: '100%', maxWidth: 616, marginBottom: 8, backgroundColor: palette.background }}
       styles={{ title: { flex: 'none', color: palette.fontColor } }}
     >
+      <Typography style={{ color: palette.fontColor }}>{'Добавленные профили:'}</Typography>
+      <Typography style={{ color: palette.fontColor }}>{'admin@gmail.com 123qweasd (Админ)'}</Typography>
+      <Typography style={{ color: palette.fontColor }}>{'user@gmail.com 123qweasd (Пользователь)'}</Typography>
       <Form
         form={form}
         layout="vertical"
@@ -56,6 +89,7 @@ export default function AuthBlock() {
         <Form.Item<FormFieldsType>
           label={<label style={{ color: palette.fontColor }}>{t('auth.email')}</label>}
           name="email"
+          hasFeedback
           rules={[
             {
               type: 'email',
@@ -64,12 +98,12 @@ export default function AuthBlock() {
             { required: true, message: t('auth.msgRequiredField') },
           ]}
         >
-          s
           <Input style={{ color: palette.fontColor, backgroundColor: palette.background }} />
         </Form.Item>
         <Form.Item<FormFieldsType>
           label={<label style={{ color: palette.fontColor }}>{t('auth.password')}</label>}
           name="password"
+          hasFeedback
           rules={[
             { min: 8, message: t('auth.msgPasswordMinLength') },
             { required: true, message: t('auth.msgRequiredField') },
@@ -77,6 +111,29 @@ export default function AuthBlock() {
         >
           <Input.Password style={{ color: palette.fontColor, backgroundColor: palette.background }} />
         </Form.Item>
+        {mode === 'signup' ? (
+          <Form.Item<FormFieldsType>
+            label={<label style={{ color: palette.fontColor }}>{t('profile.newPasswordCheck')}</label>}
+            name="passwordCheck"
+            dependencies={['password']}
+            hasFeedback
+            rules={[
+              { min: 8, message: t('profile.msgPasswordMinLength') },
+              { max: 56, message: t('profile.msgPasswordMaxLength') },
+              { required: true, message: t('profile.msgRequiredField') },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if ((!value && !getFieldValue('password')) || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error(t('profile.msgPasswordsNotMatched')));
+                },
+              }),
+            ]}
+          >
+            <Input.Password style={{ color: palette.fontColor, backgroundColor: palette.background }} />
+          </Form.Item>
+        ) : null}
         <Form.Item label={null} style={{ marginTop: 16 }}>
           <Button block type="primary" htmlType="submit">
             {mode === 'signin' ? t('auth.signIn') : t('auth.signUp')}

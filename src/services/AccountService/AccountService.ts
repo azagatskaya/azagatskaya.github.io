@@ -1,4 +1,4 @@
-import { mockCategories as products } from 'src/homeworks/ts1/mock/products';
+import { mockCategories as products } from 'src/shared/mock/products';
 
 export const userDiscount = {
   standard: 0.03,

@@ -3,6 +3,8 @@ import { Card, Typography } from 'antd';
 import { Category, Operation } from 'src/homeworks/ts1/3_write';
 import { RenameTypeField } from '../../operation/lib/renameTypeField';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
+import { useSelector } from 'react-redux';
+import { AppState } from 'src/store';
 
 type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
@@ -64,6 +66,7 @@ export default function OperationCompact({ amount, categoryName, name, desc }: O
   const [isMounted, setIsMounted] = useState(false);
   const hasTransitionedIn = useMountTransition(isMounted, 1000);
   const root = useRef<HTMLDivElement>();
+  const isAdmin = useSelector((state: AppState) => state.profile?.role);
 
   useEffect(() => {
     setIsMounted(true);
@@ -114,7 +117,7 @@ export default function OperationCompact({ amount, categoryName, name, desc }: O
       style={{
         width: 300,
         textAlign: 'left',
-        cursor: 'pointer',
+        cursor: isAdmin ? 'pointer' : 'default',
         backgroundColor: palette.background,
         borderColor: palette.borderColor,
         minHeight: cardHeight,

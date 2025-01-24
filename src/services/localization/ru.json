@@ -30,8 +30,8 @@
     "amountAsc" : "По сумме (возрастание)",
     "amountDesc" : "По сумме (убывание)",
     "profileButton": "Профиль",
-    "loginButton": "Логин",
-    "logoutButton": "Выход",
+    "loginButton": "Войти",
+    "logoutButton": "Выйти из профиля",
     "profile": {
       "formTitle": "Профиль",
       "nickname": "Псевдоним",
@@ -46,7 +46,9 @@
       "msgPasswordMaxLength": "Длина не должна превышать 56 символов",
       "msgPasswordMinLength": "Минимальная длина пароля 8 символов",
       "msgPasswordsNotMatched": "Пароли не совпадают",
-      "msgSameNewPassword": "Новый пароль должен отличаться от текущего"
+      "msgSameNewPassword": "Новый пароль должен отличаться от текущего",
+      "msgWrongPassword": "Неверно указан текущий пароль",
+      "msgProfileUpdateSuccess": "Успешно сохранено"
     },
     "auth": {
       "email": "Email",
@@ -56,6 +58,10 @@
       "msgWrongEmailFormat": "Некорректный email",
       "msgRequiredField": "Поле не должно быть пустым",
       "msgPasswordMinLength": "Длина пароля должна быть не менее 8 символов"
+    },
+    "error": {
+      "msgNoAccess": "Недостаточно прав доступа",
+      "msgPageNotFound": "Страница не найдена"
     }
 
   }
