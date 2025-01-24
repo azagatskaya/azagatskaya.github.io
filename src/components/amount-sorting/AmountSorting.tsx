@@ -1,16 +1,19 @@
-import React, { ReactNode, useContext, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { ArrowDownOutlined, ArrowUpOutlined, DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Dropdown, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { AmountSortingEnum, OperationsContext, OperationsContextType } from 'src/contexts/OperationsContext';
+import { AmountSortingEnum } from 'src/components/operation/list/OperationList';
 
-export default function AmountSorting(): ReactNode {
+type SortingProps = {
+  sorting: AmountSortingEnum;
+  onChange: (value: AmountSortingEnum) => void | null;
+};
+
+export default function AmountSorting({ sorting, onChange }: SortingProps): ReactNode {
   const { t } = useTranslation();
-  const { sorting, handleSortingChange } = useContext<OperationsContextType>(OperationsContext);
-
   const onClick: MenuProps['onClick'] = ({ key }) => {
-    handleSortingChange(key as AmountSortingEnum);
+    onChange(key as AmountSortingEnum);
   };
 
   const items: MenuProps['items'] = useMemo(() => {

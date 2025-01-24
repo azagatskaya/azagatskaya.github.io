@@ -5,7 +5,6 @@ import App from './app/App';
 import './services/localization/i18n';
 import { LocalizationProvider } from 'src/contexts/LocalizationContext';
 import { ThemeProvider } from 'src/contexts/ThemeContext';
-import { OperationsContextProvider } from 'src/contexts/OperationsContext';
 import { Provider } from 'react-redux';
 import { store } from './store';
 
@@ -15,9 +14,7 @@ root.render(
     <Provider store={store}>
       <ThemeProvider>
         <LocalizationProvider>
-          <OperationsContextProvider>
-            <App />
-          </OperationsContextProvider>
+          <App />
         </LocalizationProvider>
       </ThemeProvider>
     </Provider>

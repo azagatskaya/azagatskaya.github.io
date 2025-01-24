@@ -7,7 +7,8 @@
     "showMoreButton": "Показать еще",
     "operations": {
       "listTitle": "Операции",
-      "modalTitle": "Просмотр/редактирование операции",
+      "modalTitleAdd": "Добавление операции",
+      "modalTitleUpdate": "Просмотр/редактирование операции",
       "addButton": "Добавить операцию",
       "title": "Операция",
       "cost": "Трата",

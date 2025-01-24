@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { init } from './slices/init';
 import { token } from './slices/token';
 import { profile } from './slices/profile';
+import { operations } from './slices/operations';
 export const store = configureStore({
   reducer: {
     token,
     init,
     profile,
+    operations,
   },
 });
 

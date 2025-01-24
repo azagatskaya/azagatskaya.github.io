@@ -7,7 +7,8 @@
     "showMoreButton": "Show more",
     "operations": {
       "listTitle": "Operations",
-      "modalTitle": "Operation preview/editing",
+      "modalTitleAdd": "Add operation",
+      "modalTitleUpdate": "Operation preview/editing",
       "addButton": "Add operation",
       "title": "Operation",
       "cost": "Cost",
