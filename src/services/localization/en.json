@@ -7,7 +7,8 @@
     "showMoreButton": "Show more",
     "operations": {
       "listTitle": "Operations",
-      "modalTitle": "Operation preview/editing",
+      "modalTitleAdd": "Add operation",
+      "modalTitleUpdate": "Operation preview/editing",
       "addButton": "Add operation",
       "title": "Operation",
       "cost": "Cost",
@@ -46,7 +47,9 @@
       "msgPasswordMaxLength": "Max length is 56 symbols",
       "msgPasswordMinLength": "Min password length is 8 symbols",
       "msgPasswordsNotMatched": "Passwords are different",
-      "msgSameNewPassword": "New password must be different from the previous one"
+      "msgSameNewPassword": "New password must be different from the previous one",
+      "msgWrongPassword": "Wrong current password",
+      "msgProfileUpdateSuccess": "Successfully updated"
     },
     "auth": {
       "email": "Email",
@@ -56,6 +59,10 @@
       "msgWrongEmailFormat": "Wrong email format",
       "msgRequiredField": "Required field",
       "msgPasswordMinLength": "Min password length is 8 symbols"
+    },
+    "error": {
+      "msgNoAccess": "Not enough rights to access this pages",
+      "msgPageNotFound": "Requested page is not found"
     }
   }
 }

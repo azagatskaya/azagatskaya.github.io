@@ -1,11 +1,4 @@
-import {
-  getCategory,
-  getId,
-  getProductDesc,
-  getProductName,
-  getRandom,
-  getRandomDate,
-} from 'src/homeworks/ts1/mock/products';
+import { getCategory, getId, getProductDesc, getProductName, getRandom, getRandomDate } from 'src/shared/mock/products';
 
 /**
  * Функции написанные здесь пригодятся на последующих уроках
