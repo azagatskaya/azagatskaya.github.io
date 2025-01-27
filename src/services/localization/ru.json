@@ -58,7 +58,8 @@
       "signUp": "Зарегистрироваться",
       "msgWrongEmailFormat": "Некорректный email",
       "msgRequiredField": "Поле не должно быть пустым",
-      "msgPasswordMinLength": "Длина пароля должна быть не менее 8 символов"
+      "msgPasswordMinLength": "Длина пароля должна быть не менее 8 символов",
+      "msgEmailExists": "Пользователь с таким email уже зарегистрирован"
     },
     "error": {
       "msgNoAccess": "Недостаточно прав доступа",

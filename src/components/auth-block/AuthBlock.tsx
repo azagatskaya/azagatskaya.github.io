@@ -1,4 +1,4 @@
-import { Button, Card, Form, type FormProps, Input, Typography } from 'antd';
+import { Button, Card, Form, type FormProps, Input, message, Typography } from 'antd';
 import React, { useContext, useState } from 'react';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ export default function AuthBlock() {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish: FormProps<FormFieldsType>['onFinish'] = (values) => {
     console.log('Submit success:', values);
@@ -41,16 +42,20 @@ export default function AuthBlock() {
         navigate('/operations');
         break;
       case 'signup':
-        newProfile = {
-          email: values.email,
-          password: values.password,
-          nickname: null,
-          about: null,
-          role: 0,
-        };
-        users.push(newProfile);
-        dispatch(setProfile(newProfile));
-        navigate('/profile');
+        if (!profile) {
+          newProfile = {
+            email: values.email,
+            password: values.password,
+            nickname: null,
+            about: null,
+            role: 0,
+          };
+          users.push(newProfile);
+          dispatch(setProfile(newProfile));
+          navigate('/profile');
+        } else {
+          messageApi.error(t('auth.msgEmailExists'));
+        }
     }
   };
 
@@ -78,6 +83,7 @@ export default function AuthBlock() {
       <Typography style={{ color: palette.fontColor }}>{'Добавленные профили:'}</Typography>
       <Typography style={{ color: palette.fontColor }}>{'admin@gmail.com 123qweasd (Админ)'}</Typography>
       <Typography style={{ color: palette.fontColor }}>{'user@gmail.com 123qweasd (Пользователь)'}</Typography>
+      {contextHolder}
       <Form
         form={form}
         layout="vertical"

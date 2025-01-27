@@ -58,7 +58,8 @@
       "signUp": "Sign Up",
       "msgWrongEmailFormat": "Wrong email format",
       "msgRequiredField": "Required field",
-      "msgPasswordMinLength": "Min password length is 8 symbols"
+      "msgPasswordMinLength": "Min password length is 8 symbols",
+      "msgEmailExists": "User with this email is already registered"
     },
     "error": {
       "msgNoAccess": "Not enough rights to access this pages",
