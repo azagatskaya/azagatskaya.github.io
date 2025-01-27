@@ -17,6 +17,10 @@ export default function Login() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    setAuthMode(authenticated ? 'signout' : 'signin');
+  }, [authenticated]);
+
   const handleToggleAuthMode = () => {
     if (authMode !== 'signout') navigate('/auth');
     else {
