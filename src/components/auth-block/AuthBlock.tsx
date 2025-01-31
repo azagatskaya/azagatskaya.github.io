@@ -130,7 +130,6 @@ export default function AuthBlock() {
             }}
           />
         </Form.Item>
-        v
         {mode === 'signup' ? (
           <Form.Item<FormFieldsType>
             label={<label style={{ color: palette.fontColor }}>{t('profile.newPasswordCheck')}</label>}
