@@ -66,7 +66,7 @@ export default function OperationCompact({ amount, categoryName, name, desc }: O
   const [isMounted, setIsMounted] = useState(false);
   const hasTransitionedIn = useMountTransition(isMounted, 1000);
   const root = useRef<HTMLDivElement>();
-  const isAdmin = useSelector((state: AppState) => state.profile?.role);
+  const isAdmin = useSelector((state: AppState) => state.auth?.role);
 
   useEffect(() => {
     setIsMounted(true);

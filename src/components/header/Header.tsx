@@ -8,6 +8,7 @@ import Login from 'src/components/login/Login';
 import ProfileButton from 'src/components/profile-button/ProfileButton';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
+import LoginRTQ from 'src/components/login/LoginRTQ';
 
 const { Header: AntHeader } = AntLayout;
 
@@ -46,6 +47,7 @@ export default function Header(): ReactNode {
         </Link>
         <ProfileButton />
         <Login />
+        <LoginRTQ />
         <ThemeSwitch />
         <LanguageSelect />
       </Flex>

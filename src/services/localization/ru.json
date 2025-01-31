@@ -59,11 +59,26 @@
       "msgWrongEmailFormat": "Некорректный email",
       "msgRequiredField": "Поле не должно быть пустым",
       "msgPasswordMinLength": "Длина пароля должна быть не менее 8 символов",
-      "msgEmailExists": "Пользователь с таким email уже зарегистрирован"
+      "msgEmailExists": "Пользователь с таким email уже зарегистрирован",
+      "msgSigninSuccess": "Успешный вход в систему",
+      "msgSignupSuccess": "Вы успешно зарегистрированы"
     },
     "error": {
       "msgNoAccess": "Недостаточно прав доступа",
-      "msgPageNotFound": "Страница не найдена"
+      "msgPageNotFound": "Страница не найдена",
+      "ERR_INCORRECT_EMAIL_OR_PASSWORD": "Email или пароль указаны неверно",
+      "ERR_ACCOUNT_ALREADY_EXIST": "Пользователь с таким email уже зарегистрирован",
+      "ERR_FIELD_REQUIRED": "Обязательное поле",
+      "ERR_INCORRECT_PASSWORD": "Неверный пароль",
+      "ERR_INVALID_PASSWORD": "Пароль не соответствует требованиям",
+      "ERR_NOT_VALID": "Ошибка запроса, обратитесь в техподдержку",
+      "ERR_AUTH":  "Ошибка запроса, обратитесь в техподдержку",
+      "ERR_NO_FILES": "Ошибка при загрузке файла",
+      "ERR_NOT_ALLOWED": "Недостаточно прав для доступа к данной странице/операции",
+      "ERR_NOT_FOUND": "Запрашиваемая сущность не найдена",
+      "ERR_VALIDATION_ERROR": "Неверные параметры запроса",
+      "ERR_INVALID_QUERY_PARAMS":  "Ошибка запроса, обратитесь в техподдержку",
+      "ERR_INTERNAL_SERVER":  "Ошибка сервера, обратитесь в техподдержку"
     }
 
   }

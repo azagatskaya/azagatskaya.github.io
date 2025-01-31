@@ -1,13 +1,13 @@
-import { Button, Card, Form, type FormProps, Input, message } from 'antd';
+import { Button, Card, Form, type FormProps, Input, Typography } from 'antd';
 import React, { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'src/store';
-import { setProfile } from 'src/store/slices/profile';
+import { setAuth } from 'src/store/slices/auth';
 
 type ProfileFieldsType = {
-  nickname: string;
+  name: string;
   about: string;
 };
 
@@ -18,18 +18,18 @@ type PasswordFieldsType = {
 };
 
 export default function Profile() {
-  const { palette } = useContext<ThemeContextType>(ThemeContext);
+  const { palette, messageApi } = useContext<ThemeContextType>(ThemeContext);
   const { t } = useTranslation();
-  const profile = useSelector((state: AppState) => state.profile);
+  const profile = useSelector((state: AppState) => state.auth);
   const dispatch = useDispatch();
   const [profileForm] = Form.useForm();
   const [pwdChangeForm] = Form.useForm();
   const [error, setError] = useState({ password: false });
-  const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish: FormProps<ProfileFieldsType>['onFinish'] = (values) => {
     console.log('Submit success:', values);
-    dispatch(setProfile({ ...profile, ...values }));
+    // TODO: change to server request
+    dispatch(setAuth({ ...profile, ...values }));
     messageApi.success(t('profile.msgProfileUpdateSuccess'));
   };
 
@@ -40,7 +40,8 @@ export default function Profile() {
   const onPwdChange: FormProps<PasswordFieldsType>['onFinish'] = (values) => {
     console.log('Submit success:', values);
     if (values.password === profile.password) {
-      dispatch(setProfile({ ...profile, password: values.newPassword }));
+      // TODO: change to server request
+      dispatch(setAuth({ ...profile, password: values.newPassword }));
       messageApi.success(t('profile.msgProfileUpdateSuccess'));
       pwdChangeForm.resetFields();
     } else {
@@ -77,14 +78,14 @@ export default function Profile() {
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
+        <Typography style={{ color: palette.fontColor, fontWeight: 600, textAlign: 'left', paddingBottom: 12 }}>
+          {`Email: ${profile.email}`}
+        </Typography>
         <Form.Item<ProfileFieldsType>
           label={<label style={{ color: palette.fontColor }}>{t('profile.nickname')}</label>}
-          name="nickname"
-          initialValue={profile ? profile.nickname : null}
-          rules={[
-            { max: 32, message: t('profile.msgNicknameMaxLength') },
-            { required: true, message: t('profile.msgRequiredField') },
-          ]}
+          name="name"
+          initialValue={profile ? profile.name : null}
+          rules={[{ max: 32, message: t('profile.msgNicknameMaxLength') }]}
         >
           <Input style={styles.textField} />
         </Form.Item>
@@ -92,10 +93,7 @@ export default function Profile() {
           label={<label style={{ color: palette.fontColor }}>{t('profile.about')}</label>}
           name="about"
           initialValue={profile ? profile.about : null}
-          rules={[
-            { max: 256, message: t('profile.msgAboutMaxLength') },
-            { required: true, message: t('profile.msgRequiredField') },
-          ]}
+          rules={[{ max: 256, message: t('profile.msgAboutMaxLength') }]}
         >
           <Input style={styles.textField} />
         </Form.Item>
@@ -105,7 +103,6 @@ export default function Profile() {
           </Button>
         </Form.Item>
       </Form>
-      {contextHolder}
       <Form
         form={pwdChangeForm}
         layout="vertical"

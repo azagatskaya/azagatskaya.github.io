@@ -33,7 +33,7 @@ export default function OperationList(): ReactNode {
   const [sorting, setSorting] = useState<AmountSortingEnum>(AmountSortingEnum.dateAsc);
   const navigate = useNavigate();
   const location = useLocation();
-  const isAdmin = useSelector((state: AppState) => state.profile?.role);
+  const isAdmin = useSelector((state: AppState) => state.auth?.role);
   const operations = useSelector((state: AppState) => state.operations);
   const dispatch = useDispatch();
 

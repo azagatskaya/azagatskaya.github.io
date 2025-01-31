@@ -3,12 +3,12 @@ import { AppState } from 'src/store';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
 import NoAccessPage from 'src/pages/noAccess';
-import { RoleEnum } from 'src/store/slices/profile';
+import { RoleEnum } from 'src/store/slices/auth';
 
 export default function withAuth<P>(Component: React.ComponentType<P>) {
   const ComponentWithAuth = (props: P) => {
-    const role = useSelector((state: AppState) => state.profile?.role);
-    const authenticated = useSelector((state: AppState) => !!state.profile);
+    const role = useSelector((state: AppState) => state.auth?.role);
+    const authenticated = useSelector((state: AppState) => !!state.auth?.email);
     const { pathname } = useLocation();
 
     const getAccess = useCallback(() => {

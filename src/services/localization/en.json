@@ -35,7 +35,7 @@
     "logoutButton": "Logout",
     "profile": {
       "formTitle": "Profile",
-      "nickname": "Nickname",
+      "nickname": "Name",
       "about": "About you",
       "password": "Password",
       "newPassword": "New password",
@@ -59,11 +59,26 @@
       "msgWrongEmailFormat": "Wrong email format",
       "msgRequiredField": "Required field",
       "msgPasswordMinLength": "Min password length is 8 symbols",
-      "msgEmailExists": "User with this email is already registered"
+      "msgEmailExists": "User with this email is already registered",
+      "msgSigninSuccess": "Successfully signed in",
+      "msgSignupSuccess": "Successfully signed up"
     },
     "error": {
-      "msgNoAccess": "Not enough rights to access this pages",
-      "msgPageNotFound": "Requested page is not found"
+      "msgNoAccess": "Not enough rights to access this page",
+      "msgPageNotFound": "Requested page is not found",
+      "ERR_INCORRECT_EMAIL_OR_PASSWORD": "Incorrect email or password",
+      "ERR_ACCOUNT_ALREADY_EXIST": "Account with this email already exists",
+      "ERR_FIELD_REQUIRED": "Field is required",
+      "ERR_INCORRECT_PASSWORD": "Password is incorrect",
+      "ERR_INVALID_PASSWORD": "Password doesn't meet the requirements",
+      "ERR_NOT_VALID": "Request error, contact to support",
+      "ERR_AUTH": "Request error, contact to support",
+      "ERR_NO_FILES": "Error while file loading",
+      "ERR_NOT_ALLOWED": "Not enough rights to access this page/operation",
+      "ERR_NOT_FOUND": "Requested entity is not found",
+      "ERR_VALIDATION_ERROR": "Wrong request parameters",
+      "ERR_INVALID_QUERY_PARAMS":  "Request error, contact to support",
+      "ERR_INTERNAL_SERVER": "Server error, contact to support"
     }
   }
 }
