@@ -1,15 +1,25 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { init } from './slices/init';
-import { token } from './slices/token';
-import { profile } from './slices/profile';
 import { operations } from './slices/operations';
+import { SERVER_URL } from 'src/shared/config';
+import { auth } from 'src/store/slices/auth';
+import { authApi } from 'src/services/authentication';
+
 export const store = configureStore({
   reducer: {
-    token,
+    auth,
     init,
-    profile,
     operations,
+    [authApi.reducerPath]: authApi.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      thunk: {
+        extraArgument: {
+          url: SERVER_URL,
+        },
+      },
+    }).concat(authApi.middleware),
 });
 
 export type AppState = ReturnType<typeof store.getState>;

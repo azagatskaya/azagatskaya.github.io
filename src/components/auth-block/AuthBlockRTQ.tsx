@@ -1,11 +1,13 @@
 import { Button, Card, Form, type FormProps, Input, Typography } from 'antd';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AppDispatch } from 'src/store';
-import { signin, signup } from 'src/store/slices/auth';
+import { setAuth } from 'src/store/slices/auth';
+import { authApi } from 'src/services/authentication';
+import { ServerErrors, SignInBody } from 'src/shared/serverTypes';
 
 type FormFieldsType = {
   email: string;
@@ -18,7 +20,7 @@ enum AuthBlockModeEnum {
   SignUp = 'signup',
 }
 
-export default function AuthBlock() {
+export default function AuthBlockRTQ() {
   const { palette, messageApi } = useContext<ThemeContextType>(ThemeContext);
   const { t } = useTranslation();
   const [mode, setMode] = useState<AuthBlockModeEnum>(AuthBlockModeEnum.SignIn);
@@ -26,36 +28,79 @@ export default function AuthBlock() {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [error, setError] = useState({ signin: false, signup: false, password: false });
+  const [skipSignIn, setSkipSignin] = useState(true);
+  const [skipSignUp, setSkipSignUp] = useState(true);
+  const [signInBody, setSignInBody] = useState<SignInBody>({ email: '', password: '' });
+  const [signUpBody, setSignUpBody] = useState<SignInBody>({ email: '', password: '' });
+
+  const {
+    data: signInData,
+    isLoading: signInLoading,
+    error: signInError,
+  } = authApi.endpoints.signIn.useQuery(signInBody, {
+    skip: skipSignIn,
+  });
+  const {
+    data: signUpData,
+    isLoading: signUpLoading,
+    error: signUpError,
+  } = authApi.endpoints.signUp.useQuery(signUpBody, {
+    skip: skipSignUp,
+  });
+
+  useEffect(() => {
+    console.log('UEF signInData', signInData);
+    if (signInData) {
+      dispatch(setAuth(signInData.profile));
+      messageApi.success(t('auth.msgSigninSuccess'));
+      setSkipSignin(true);
+      navigate('/operations');
+    }
+  }, [signInData, dispatch, messageApi, navigate, t]);
+
+  useEffect(() => {
+    if (signInError) {
+      console.log('signInError', signInError);
+      setError((prevState) => ({ ...prevState, signin: true }));
+      if ('status' in signInError) {
+        const eData = signInError.data as ServerErrors;
+        messageApi.error(t(`error.${eData.errors[0].extensions.code}`));
+      }
+    }
+  }, [messageApi, signInError, t]);
+
+  useEffect(() => {
+    if (signUpData) {
+      dispatch(setAuth(signUpData.profile));
+      messageApi.success(t('auth.msgSignupSuccess'));
+      setSkipSignUp(true);
+      navigate('/profile');
+    }
+  }, [signUpData, dispatch, messageApi, navigate, t]);
+
+  useEffect(() => {
+    if (signUpError) {
+      if ('status' in signUpError) {
+        const eData = signUpError.data as ServerErrors;
+        const error = eData.errors[0].extensions.code;
+        setError((prevState) =>
+          error === 'ERR_INVALID_PASSWORD' ? { ...prevState, password: true } : { ...prevState, signup: true }
+        );
+        messageApi.error(t(`error.${error}`));
+      }
+    }
+  }, [messageApi, signUpError, t]);
 
   const onFinish: FormProps<FormFieldsType>['onFinish'] = (values) => {
     console.log('Submit success:', values);
-
     switch (mode) {
       case 'signin':
-        (async () => {
-          try {
-            await dispatch(signin(values)).unwrap();
-            messageApi.success(t('auth.msgSigninSuccess'));
-            navigate('/operations');
-          } catch (err) {
-            setError((prevState) => ({ ...prevState, signin: true }));
-            messageApi.error(t(`error.${err}`));
-          }
-        })();
+        setSignInBody(values);
+        setSkipSignin(false);
         break;
       case 'signup':
-        (async () => {
-          try {
-            await dispatch(signup(values)).unwrap();
-            messageApi.success(t('auth.msgSignupSuccess'));
-            navigate('/profile');
-          } catch (err) {
-            setError((prevState) =>
-              err === 'ERR_INVALID_PASSWORD' ? { ...prevState, password: true } : { ...prevState, signup: true }
-            );
-            messageApi.error(t(`error.${err}`));
-          }
-        })();
+        setSignUpBody(values);
+        setSkipSignUp(false);
         break;
     }
   };
@@ -96,13 +141,7 @@ export default function AuthBlock() {
           name="email"
           validateStatus={error.signin || error.signup ? 'error' : null}
           hasFeedback
-          rules={[
-            {
-              type: 'email',
-              message: t('auth.msgWrongEmailFormat'),
-            },
-            { required: true, message: t('auth.msgRequiredField') },
-          ]}
+          required
         >
           <Input
             style={{ color: palette.fontColor, backgroundColor: palette.background }}
@@ -117,10 +156,7 @@ export default function AuthBlock() {
           name="password"
           validateStatus={error.signin || error.signup || error.password ? 'error' : null}
           hasFeedback
-          rules={[
-            { min: 8, message: t('auth.msgPasswordMinLength') },
-            { required: true, message: t('auth.msgRequiredField') },
-          ]}
+          required
         >
           <Input.Password
             style={{ color: palette.fontColor, backgroundColor: palette.background }}
@@ -130,7 +166,6 @@ export default function AuthBlock() {
             }}
           />
         </Form.Item>
-        v
         {mode === 'signup' ? (
           <Form.Item<FormFieldsType>
             label={<label style={{ color: palette.fontColor }}>{t('profile.newPasswordCheck')}</label>}
@@ -138,19 +173,7 @@ export default function AuthBlock() {
             name="passwordCheck"
             dependencies={['password']}
             hasFeedback
-            rules={[
-              { min: 8, message: t('profile.msgPasswordMinLength') },
-              { max: 56, message: t('profile.msgPasswordMaxLength') },
-              { required: true, message: t('profile.msgRequiredField') },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if ((!value && !getFieldValue('password')) || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(new Error(t('profile.msgPasswordsNotMatched')));
-                },
-              }),
-            ]}
+            required
           >
             <Input.Password
               style={{ color: palette.fontColor, backgroundColor: palette.background }}
