@@ -11,7 +11,7 @@ export default function ProfileButton() {
   const { palette } = useContext<ThemeContextType>(ThemeContext);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const authenticated = useSelector((state: AppState) => !!state.auth?.email);
+  const authenticated = useSelector<AppState>((state: AppState) => !!state.auth?.email);
   const [disabled, setDisabled] = useState(!authenticated);
 
   useEffect(() => {

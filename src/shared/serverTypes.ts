@@ -48,6 +48,94 @@ export type ServerErrors = {
   }[];
 };
 
+export type GetPageArgsType = {
+  pageNumber: number;
+  sorting: Sorting;
+  date?: DateRange;
+};
+
+export type FilterType = {
+  pagination: string;
+  sorting: string;
+  date?: string;
+};
+
+export enum SortType {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
+export enum SortField {
+  id = 'id',
+  createdAt = 'createdAt',
+  updatedAt = 'updatedAt',
+  date = 'date',
+  name = 'name',
+}
+
+export type Sorting = {
+  type: SortType;
+  field: SortField;
+};
+
+export type Pagination = {
+  pageSize: number;
+  pageNumber: number;
+  total: number;
+};
+
+export type DateRange = {
+  gte?: string;
+  lte?: string;
+};
+
+export type SliderRange = {
+  min?: string;
+  max?: string;
+};
+
+export type DateRangeType = {
+  min: Date;
+  max: Date;
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  photo?: string;
+  commandId?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type Cost = {
+  id?: string;
+  name: string;
+  desc?: string;
+  date: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  amount: number;
+  category: Category;
+  commandId?: string;
+  type: 'Cost';
+};
+
+export type Profit = {
+  id?: string;
+  name: string;
+  desc?: string;
+  date: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+  amount: number;
+  category: Category;
+  commandId?: string;
+  type: 'Profit';
+};
+
+export type Operation = Profit | Cost;
+
 export enum ErrorCode {
   ERR_INCORRECT_EMAIL_OR_PASSWORD = 'ERR_INCORRECT_EMAIL_OR_PASSWORD', // Если не корректный email или пароль
   ERR_ACCOUNT_ALREADY_EXIST = 'ERR_ACCOUNT_ALREADY_EXIST', // При регистрации если пользователь уже существует

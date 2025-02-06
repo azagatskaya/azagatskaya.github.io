@@ -1,14 +1,16 @@
-import React, { CSSProperties, ReactNode, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Card, Typography } from 'antd';
-import { Category, Operation } from 'src/homeworks/ts1/3_write';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import { Card, Tooltip, Typography } from 'antd';
+import { Category, Operation } from 'src/shared/serverTypes';
 import { RenameTypeField } from '../../operation/lib/renameTypeField';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useSelector } from 'react-redux';
 import { AppState } from 'src/store';
+import dayjs from 'dayjs';
+import { MIN_CARD_HEIGHT } from 'src/components/operation/list/OperationList';
 
 type RenamedCatName = RenameTypeField<Pick<Category, 'name'>, 'name', 'categoryName'>;
 
-type OperationProps = Pick<Operation, 'amount' | 'name' | 'desc'>;
+type OperationProps = Pick<Operation, 'amount' | 'name' | 'date' | 'desc'>;
 type OperationCompactProps = OperationProps & RenamedCatName;
 
 const styles = {
@@ -16,6 +18,10 @@ const styles = {
     color: '#3d96c8',
     fontSize: 18,
     fontWeight: 500,
+    width: 190,
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   amount: {
     color: '#f44336',
@@ -26,20 +32,6 @@ const styles = {
     transform: 'translateY(0)',
   },
 };
-
-const resizeButtonStyle: CSSProperties = {
-  position: 'absolute',
-  bottom: 1,
-  left: 120,
-  width: 60,
-  height: 2,
-  borderRadius: 1,
-  cursor: 'ns-resize',
-};
-
-export type CardHeight = number;
-
-const MIN_CARD_HEIGHT = 108;
 
 const useMountTransition = (isMounted: boolean, unmountDelay: number) => {
   const [hasTransitionedIn, setHasTransitionedIn] = useState(false);
@@ -60,67 +52,32 @@ const useMountTransition = (isMounted: boolean, unmountDelay: number) => {
   return hasTransitionedIn;
 };
 
-export default function OperationCompact({ amount, categoryName, name, desc }: OperationCompactProps): ReactNode {
+export default function OperationCompact({ amount, categoryName, name, desc, date }: OperationCompactProps): ReactNode {
   const { palette } = useContext<ThemeContextType>(ThemeContext);
-  const [cardHeight, setCardHeight] = useState(MIN_CARD_HEIGHT);
   const [isMounted, setIsMounted] = useState(false);
   const hasTransitionedIn = useMountTransition(isMounted, 1000);
-  const root = useRef<HTMLDivElement>();
   const isAdmin = useSelector((state: AppState) => state.auth?.role);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const sizesCopy = useRef(cardHeight);
-  sizesCopy.current = cardHeight;
-
-  const { onMouseDownResizer } = useMemo(() => {
-    let start = { x: 0, y: 0, width: 300, height: MIN_CARD_HEIGHT };
-
-    const safeSetSizes = (_cardHeight: CardHeight) => {
-      setCardHeight(_cardHeight < MIN_CARD_HEIGHT ? MIN_CARD_HEIGHT : Math.round(_cardHeight));
-    };
-    const move = (e: MouseEvent) => {
-      e.preventDefault();
-      const rect = root.current.getBoundingClientRect();
-      const y = start.y - (e.clientY - rect.y);
-      safeSetSizes(start.height - y);
-    };
-    const up = () => {
-      window.removeEventListener('mousemove', move);
-      window.removeEventListener('mouseup', up);
-    };
-
-    return {
-      onMouseDownResizer: (e: React.MouseEvent) => {
-        e.stopPropagation();
-        const rect = root.current.getBoundingClientRect();
-        start = {
-          x: e.clientX - rect.x,
-          y: e.clientY - rect.y,
-          width: 300,
-          height: sizesCopy.current,
-        };
-        window.addEventListener('mousemove', move);
-        window.addEventListener('mouseup', up);
-      },
-    };
-  }, []);
-
   return (
     <Card
-      ref={root}
       title={<Typography style={styles.amount}>{`\u20bd ${amount}`}</Typography>}
-      extra={<Typography style={styles.operationName}>{name}</Typography>}
+      extra={
+        <Tooltip title={name}>
+          <Typography style={styles.operationName}>{name}</Typography>
+        </Tooltip>
+      }
       size="small"
       style={{
         width: 300,
+        minHeight: MIN_CARD_HEIGHT,
         textAlign: 'left',
         cursor: isAdmin ? 'pointer' : 'default',
         backgroundColor: palette.background,
         borderColor: palette.borderColor,
-        minHeight: cardHeight,
         resize: 'vertical',
         opacity: 0,
         transform: 'translateY(15px)',
@@ -131,12 +88,11 @@ export default function OperationCompact({ amount, categoryName, name, desc }: O
         header: { width: 300, borderBottom: `1px solid ${palette.borderColor}` },
       }}
     >
+      <Typography style={{ color: palette.fontColor, textAlign: 'left' }}>
+        {dayjs(date).format('DD-MM-YYYY')}
+      </Typography>
       <Typography style={{ color: palette.fontColor }}>{categoryName}</Typography>
       <Typography style={{ color: palette.fontColor }}>{desc || ''}</Typography>
-      <div
-        style={{ ...resizeButtonStyle, backgroundColor: palette.fontColorDisabled }}
-        onMouseDown={onMouseDownResizer}
-      ></div>
     </Card>
   );
 }

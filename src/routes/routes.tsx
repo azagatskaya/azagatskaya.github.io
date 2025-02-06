@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import OperationsPage from 'src/pages/operations';
 import AuthPage from 'src/pages/auth';
-import AuthPageRTQ from 'src/pages/authrtq';
 import NoAccessPage from 'src/pages/noAccess';
 import ProfilePage from 'src/pages/profile';
 import React, { useContext } from 'react';
@@ -19,7 +18,6 @@ export default function AppRoutes() {
         <Route path={'/'}>
           <Route index element={<OperationsPage />} />
           <Route path="auth" element={<AuthPage />} />
-          <Route path="authrtq" element={<AuthPageRTQ />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="operations">
             <Route index element={<OperationsPage />} />

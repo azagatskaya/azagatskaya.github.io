@@ -1,130 +1,231 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Flex } from 'antd';
+import React, { ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { Button, Flex, Skeleton, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
-import RangeSlider from 'src/components/range-slider/RangeSlider';
 import AmountSorting from 'src/components/amount-sorting/AmountSorting';
 import OperationCompact from 'src/components/operation/operation-compact/OperationCompact';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'src/store';
-import { Operation } from 'src/homeworks/ts1/3_write';
-import { moreOperations } from 'src/store/slices/operations';
+import { AppDispatch, AppState } from 'src/store';
+import { DateRangeType, SortField, Sorting, SortType } from 'src/shared/serverTypes';
+import { getDateSliderValues, getOperationsPage } from 'src/store/slices/operations';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
+import DateRangeSlider from 'src/components/range-slider/DateRangeSlider';
 
-export enum AmountSortingEnum {
-  dateAsc = 'dateAsc',
-  dateDesc = 'dateDesc',
-  amountAsc = 'amountAsc',
-  amountDesc = 'amountDesc',
-}
+type GetOperationsPageArgs =
+  | {
+      reset?: boolean;
+      sortingValue?: Sorting;
+      dateFilter?: DateRangeType;
+    }
+  | undefined;
 
-export type RangeType = {
-  min: number;
-  max: number;
-};
+export const MIN_CARD_HEIGHT = 168;
 
-export const AMOUNT_MIN = 0;
-export const AMOUNT_MAX = 1_000_000;
+export const DATE_MIN = new Date(2024, 0, 1);
+export const DATE_MAX = new Date(new Date().setMonth(new Date().getMonth() + 1));
 
-const defaultAmountRange = { min: AMOUNT_MIN, max: AMOUNT_MAX };
+export const defaultDateRange = { min: DATE_MIN, max: DATE_MAX };
+export const defaultSorting = { type: SortType.DESC, field: SortField.date };
 
 export default function OperationList(): ReactNode {
+  const { palette, messageApi } = useContext<ThemeContextType>(ThemeContext);
   const { t } = useTranslation();
-  const [range, setRange] = useState<RangeType>(defaultAmountRange);
-  const [sorting, setSorting] = useState<AmountSortingEnum>(AmountSortingEnum.dateAsc);
+  const [sorting, setSorting] = useState<Sorting>(defaultSorting);
   const navigate = useNavigate();
   const location = useLocation();
   const isAdmin = useSelector((state: AppState) => state.auth?.role);
-  const operations = useSelector((state: AppState) => state.operations);
-  const dispatch = useDispatch();
+  const operations = useSelector((state: AppState) => state.operations?.data || []);
+  const pagination = useSelector((state: AppState) => state.operations?.pagination);
+  const sliderRange = useSelector((state: AppState) => ({
+    min: new Date(state?.operations?.sliderRange?.min),
+    max: new Date(state?.operations?.sliderRange?.max),
+  }));
+  const dispatch = useDispatch<AppDispatch>();
+  const [pageNumber, setPageNumber] = useState(1);
+  const [dateRange, setDateRange] = useState<DateRangeType>(defaultDateRange);
+  const containerRef = useRef();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await dispatch(getDateSliderValues()).unwrap();
+      } catch (err) {
+        messageApi.error(t(`error.${err}`));
+      }
+    })();
+  }, [dispatch, messageApi, t]);
+
+  const isDateFilterOn = useMemo(
+    () =>
+      sliderRange && dateRange
+        ? new Date(sliderRange.min).valueOf() !== new Date(dateRange.min).valueOf() ||
+          new Date(sliderRange.max).valueOf() !== new Date(dateRange.max).valueOf()
+        : false,
+    [dateRange, sliderRange]
+  );
+
+  const getMoreOperations = useCallback(
+    async ({ reset, sortingValue, dateFilter }: GetOperationsPageArgs) => {
+      if (isDateFilterOn || !pagination || pagination?.pageSize * pagination?.pageNumber < pagination?.total) {
+        try {
+          const response = await dispatch(
+            getOperationsPage({
+              pageNumber: reset ? 1 : pageNumber,
+              sorting: sortingValue ?? sorting,
+              date: isDateFilterOn
+                ? {
+                    gte: (dateFilter ? dateFilter : dateRange).min.toISOString(),
+                    lte: (dateFilter ? dateFilter : dateRange).max.toISOString(),
+                  }
+                : null,
+            })
+          );
+
+          if (!('error' in response)) setPageNumber((prevState) => (reset ? 1 : prevState + 1));
+        } catch (err) {
+          messageApi.error(t(`error.${err}`));
+        }
+      }
+    },
+    [dateRange, dispatch, isDateFilterOn, messageApi, pageNumber, pagination, sorting, t]
+  );
 
   const handleAddOperationClick = (): void => {
     navigate(`/operations/create`);
   };
 
-  const handleShowMoreClick = () => {
-    dispatch(moreOperations());
+  useEffect(() => {
+    if (operations.length) {
+      const datesInMs = operations.map((op) => new Date(op.date).valueOf());
+      const min = Math.min(...datesInMs);
+      const max = Math.max(...datesInMs);
+
+      if (!isDateFilterOn) setDateRange({ min: new Date(min), max: new Date(max) });
+    } else {
+      if (!isDateFilterOn) setDateRange(defaultDateRange);
+    }
+  }, [isDateFilterOn, operations]);
+
+  const handleDateRangeChange = ([min, max]: number[]): void => {
+    setDateRange({ min: new Date(min), max: new Date(max) });
+    getMoreOperations({ reset: true, dateFilter: { min: new Date(min), max: new Date(max) } });
   };
 
-  const handleRangeChange = ([min, max]: number[]): void => {
-    setRange({ min, max });
-  };
-
-  const handleSortingChange = (value: AmountSortingEnum): void => {
+  const handleSortingChange = (value: Sorting): void => {
     setSorting(value);
+    getMoreOperations({ reset: true, sortingValue: value });
   };
 
-  const operationComparator = useCallback(
-    (op1: Operation, op2: Operation) => {
-      switch (sorting) {
-        case AmountSortingEnum.dateAsc:
-          return op1.createdAt.localeCompare(op2.createdAt);
-        case AmountSortingEnum.dateDesc:
-          return op2.createdAt.localeCompare(op1.createdAt);
-        case AmountSortingEnum.amountAsc:
-          return op1.amount - op2.amount;
-        case AmountSortingEnum.amountDesc:
-          return op2.amount - op1.amount;
+  const observerCallbackFunction = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const [entry] = entries;
+
+      if (entry.isIntersecting) {
+        getMoreOperations({});
       }
     },
-    [sorting]
+    [getMoreOperations]
   );
 
-  const maxSliderValue = useMemo(() => {
-    return operations.reduce((acc, op) => {
-      return op.amount > acc ? op.amount : acc;
-    }, 0);
-  }, [operations]);
-
   useEffect(() => {
-    setRange((prevState) => ({
-      min: prevState.min,
-      max: maxSliderValue,
-    }));
-  }, [maxSliderValue]);
+    const observer = new IntersectionObserver(observerCallbackFunction, {
+      root: null,
+      rootMargin: '0px',
+      threshold: 1.0,
+    });
 
-  const filteredData = useMemo(() => {
-    return operations
-      .filter((op) => op.amount >= range.min && op.amount <= range.max)
-      .sort((op1, op2) => operationComparator(op1, op2));
-  }, [operationComparator, operations, range.max, range.min]);
+    if (containerRef.current) observer.observe(containerRef?.current);
+
+    return () => {
+      if (containerRef.current) observer.unobserve(containerRef?.current);
+    };
+  }, [observerCallbackFunction, containerRef]);
 
   const items = useMemo(() => {
-    return filteredData.map((op) =>
-      isAdmin ? (
-        <Link key={op.id.toString()} to={`/operations/${op.id}`} state={{ previousLocation: location }}>
-          <OperationCompact
-            key={op.id}
-            amount={op.amount}
-            categoryName={op.category.name ?? ''}
-            name={op.name}
-            desc={op.desc}
-          />
-        </Link>
-      ) : (
-        <OperationCompact
-          key={op.id}
-          amount={op.amount}
-          categoryName={op.category.name ?? ''}
-          name={op.name}
-          desc={op.desc}
-        />
-      )
+    return (
+      <Flex
+        gap={16}
+        wrap
+        style={{
+          width: 646,
+          height: 'calc(100vh - 220px)',
+          paddingRight: 12,
+          overflowX: 'hidden',
+        }}
+      >
+        {operations.map((op) =>
+          isAdmin ? (
+            <Link key={`link_${op.id.toString()}`} to={`/operations/${op.id}`} state={{ previousLocation: location }}>
+              <OperationCompact
+                key={op.id}
+                amount={op.amount}
+                categoryName={op.category.name}
+                name={op.name}
+                date={op.date}
+                desc={op.desc}
+              />
+            </Link>
+          ) : (
+            <OperationCompact
+              key={op.id}
+              amount={op.amount}
+              categoryName={op.category.name}
+              name={op.name}
+              date={op.date}
+              desc={op.desc}
+            />
+          )
+        )}
+        {!pagination || pagination?.pageSize * pagination?.pageNumber < pagination?.total ? (
+          <Flex gap={16} ref={containerRef}>
+            <Skeleton.Input
+              key={'sk_1'}
+              active={true}
+              size={'default'}
+              style={{ width: 300, height: 108, backgroundColor: palette.borderColor }}
+            />
+            <Skeleton.Input
+              key={'sk_2'}
+              active={true}
+              size={'default'}
+              style={{ width: 300, height: 108, backgroundColor: palette.borderColor }}
+            />
+          </Flex>
+        ) : (
+          <Typography style={{ textAlign: 'center', width: '100%', color: palette.fontColor }}>
+            {t('operations.msgAllOperationsShown')}
+          </Typography>
+        )}
+      </Flex>
     );
-  }, [filteredData, location]);
+  }, [operations, isAdmin, location, pagination, palette.borderColor, palette.fontColor, t]);
 
   return (
-    <Flex gap={16} wrap style={{ width: 616 }}>
+    <Flex gap={16} wrap style={{ width: 646 }}>
       <Flex gap={16} style={{ width: '100%', height: 48 }} dir={'row'} justify={'space-between'} align={'center'}>
-        <RangeSlider range={range} onChange={handleRangeChange} maxSliderValue={maxSliderValue} />
-        <AmountSorting sorting={sorting} onChange={handleSortingChange} />
+        <DateRangeSlider range={dateRange} onChange={handleDateRangeChange} sliderMinMax={sliderRange} />
+        <AmountSorting onChange={handleSortingChange} />
       </Flex>
       <Button variant={'solid'} color={'primary'} onClick={handleAddOperationClick} style={{ width: '100%' }}>
         {t('operations.addButton')}
       </Button>
       {items}
-      <Button variant={'solid'} color={'primary'} onClick={handleShowMoreClick} style={{ width: '100%' }}>
-        {t('showMoreButton')}
-      </Button>
+      {operations.length === 0 ? (
+        isDateFilterOn ? (
+          <>
+            <Typography style={{ color: palette.fontColor, width: '100%', textAlign: 'center', marginTop: '100px' }}>
+              {t('operations.msgNoData')}
+            </Typography>
+            <Typography style={{ color: palette.fontColor, width: '100%', textAlign: 'center', marginTop: '100px' }}>
+              {t('operations.msgTryChangeFilters')}
+            </Typography>
+          </>
+        ) : (
+          <Typography style={{ color: palette.fontColor, width: '100%', textAlign: 'center', marginTop: '100px' }}>
+            {t('operations.msgNoData')}
+          </Typography>
+        )
+      ) : null}
     </Flex>
   );
 }

@@ -1,15 +1,12 @@
 import { Button, Card, Form, type FormProps, Input, Typography } from 'antd';
-import React, { useContext, useMemo, useState } from 'react';
+import React, { CSSProperties, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'src/store';
-import { setAuth } from 'src/store/slices/auth';
-
-type ProfileFieldsType = {
-  name: string;
-  about: string;
-};
+import { AppDispatch, AppState } from 'src/store';
+import { clearAuth, updatePassword, updateProfile } from 'src/store/slices/auth';
+import { getTokenFromLocalStorage } from 'src/shared/token';
+import { UpdateProfileBody } from 'src/shared/serverTypes';
 
 type PasswordFieldsType = {
   password: string;
@@ -21,31 +18,43 @@ export default function Profile() {
   const { palette, messageApi } = useContext<ThemeContextType>(ThemeContext);
   const { t } = useTranslation();
   const profile = useSelector((state: AppState) => state.auth);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [profileForm] = Form.useForm();
   const [pwdChangeForm] = Form.useForm();
-  const [error, setError] = useState({ password: false });
+  const [error, setError] = useState({ password: false, update: false });
 
-  const onFinish: FormProps<ProfileFieldsType>['onFinish'] = (values) => {
+  const onFinish: FormProps<UpdateProfileBody>['onFinish'] = async (values) => {
     console.log('Submit success:', values);
-    // TODO: change to server request
-    dispatch(setAuth({ ...profile, ...values }));
-    messageApi.success(t('profile.msgProfileUpdateSuccess'));
+    try {
+      const token = getTokenFromLocalStorage();
+      if (token) {
+        await dispatch(updateProfile({ token, ...values })).unwrap();
+        messageApi.success(t('profile.msgProfileUpdateSuccess'));
+      } else dispatch(clearAuth());
+    } catch (err) {
+      setError((prevState) => ({ ...prevState, update: true }));
+      messageApi.error(t(`error.${err}`));
+    }
   };
 
-  const onFinishFailed: FormProps<ProfileFieldsType>['onFinishFailed'] = (errorInfo) => {
+  const onFinishFailed: FormProps<UpdateProfileBody>['onFinishFailed'] = (errorInfo) => {
     console.log('Submit fail:', errorInfo);
   };
 
-  const onPwdChange: FormProps<PasswordFieldsType>['onFinish'] = (values) => {
+  const onPwdChange: FormProps<PasswordFieldsType>['onFinish'] = async (values) => {
     console.log('Submit success:', values);
-    if (values.password === profile.password) {
-      // TODO: change to server request
-      dispatch(setAuth({ ...profile, password: values.newPassword }));
-      messageApi.success(t('profile.msgProfileUpdateSuccess'));
-      pwdChangeForm.resetFields();
-    } else {
+    try {
+      const token = getTokenFromLocalStorage();
+      if (token) {
+        await dispatch(
+          updatePassword({ token, body: { password: values.password, newPassword: values.newPassword } })
+        ).unwrap();
+        messageApi.success(t('profile.msgPasswordChangeSuccess'));
+        pwdChangeForm.resetFields();
+      } else dispatch(clearAuth());
+    } catch (err) {
       setError((prevState) => ({ ...prevState, password: true }));
+      messageApi.error(t(`error.${err}`));
     }
   };
 
@@ -53,51 +62,50 @@ export default function Profile() {
     console.log('Submit fail:', errorInfo);
   };
 
-  const styles = useMemo(() => {
+  const styles: { [key: string]: CSSProperties } = useMemo(() => {
     return {
-      textField: { color: palette.fontColor, backgroundColor: palette.background },
-    };
-  }, [palette.fontColor, palette.background]);
-
-  return (
-    <Card
-      title={t('profile.formTitle')}
-      style={{
+      card: {
         width: '100%',
         maxWidth: 616,
         marginBottom: 8,
         backgroundColor: palette.background,
-      }}
-      styles={{ title: { flex: 'none', color: palette.fontColor } }}
-    >
+      },
+      cardText: { flex: 'none', color: palette.fontColor },
+      textField: { color: palette.fontColor, backgroundColor: palette.background },
+      size: { maxWidth: 614, minWidth: 377 },
+      font: { color: palette.fontColor },
+      typo: { color: palette.fontColor, fontWeight: 600, textAlign: 'left', paddingBottom: 12 },
+      label: { color: palette.fontColor },
+      button: { marginTop: 16 },
+    };
+  }, [palette.fontColor, palette.background]);
+
+  return (
+    <Card title={t('profile.formTitle')} style={styles.card} styles={{ title: styles.cardText }}>
       <Form
         form={profileForm}
         layout="vertical"
-        style={{ maxWidth: 614, minWidth: 377, color: palette.fontColor }}
+        style={{ ...styles.size, ...styles.font }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
-        <Typography style={{ color: palette.fontColor, fontWeight: 600, textAlign: 'left', paddingBottom: 12 }}>
-          {`Email: ${profile.email}`}
-        </Typography>
-        <Form.Item<ProfileFieldsType>
-          label={<label style={{ color: palette.fontColor }}>{t('profile.nickname')}</label>}
+        <Typography style={styles.typo}>{`Email: ${profile.email}`}</Typography>
+        <Form.Item<UpdateProfileBody>
+          label={<label style={styles.label}>{t('profile.nickname')}</label>}
+          validateStatus={error.update ? 'error' : null}
           name="name"
           initialValue={profile ? profile.name : null}
-          rules={[{ max: 32, message: t('profile.msgNicknameMaxLength') }]}
+          rules={[{ pattern: /^\S{7,32}$/g, message: t('profile.msgNicknameReqex') }]}
         >
-          <Input style={styles.textField} />
+          <Input
+            style={styles.textField}
+            onFocus={() => {
+              if (error.update) setError((prevState) => ({ ...prevState, update: false }));
+            }}
+          />
         </Form.Item>
-        <Form.Item<ProfileFieldsType>
-          label={<label style={{ color: palette.fontColor }}>{t('profile.about')}</label>}
-          name="about"
-          initialValue={profile ? profile.about : null}
-          rules={[{ max: 256, message: t('profile.msgAboutMaxLength') }]}
-        >
-          <Input style={styles.textField} />
-        </Form.Item>
-        <Form.Item label={null} style={{ marginTop: 16 }}>
+        <Form.Item label={null} style={styles.button}>
           <Button block type="primary" htmlType="submit">
             {t('save')}
           </Button>
@@ -106,13 +114,13 @@ export default function Profile() {
       <Form
         form={pwdChangeForm}
         layout="vertical"
-        style={{ maxWidth: 614, minWidth: 377 }}
+        style={styles.size}
         onFinish={onPwdChange}
         onFinishFailed={onPwdChangeFailed}
         autoComplete="off"
       >
         <Form.Item<PasswordFieldsType>
-          label={<label style={{ color: palette.fontColor }}>{t('profile.password')}</label>}
+          label={<label style={styles.font}>{t('profile.password')}</label>}
           name="password"
           validateStatus={error.password ? 'error' : null}
           hasFeedback
@@ -131,7 +139,7 @@ export default function Profile() {
           />
         </Form.Item>
         <Form.Item<PasswordFieldsType>
-          label={<label style={{ color: palette.fontColor }}>{t('profile.newPassword')}</label>}
+          label={<label style={styles.font}>{t('profile.newPassword')}</label>}
           name="newPassword"
           dependencies={['password']}
           hasFeedback
@@ -149,10 +157,15 @@ export default function Profile() {
             }),
           ]}
         >
-          <Input.Password style={styles.textField} />
+          <Input.Password
+            style={styles.textField}
+            onFocus={() => {
+              if (error.password) setError((prevState) => ({ ...prevState, password: false }));
+            }}
+          />
         </Form.Item>
         <Form.Item<PasswordFieldsType>
-          label={<label style={{ color: palette.fontColor }}>{t('profile.newPasswordCheck')}</label>}
+          label={<label style={styles.font}>{t('profile.newPasswordCheck')}</label>}
           name="newPasswordCheck"
           dependencies={['newPassword']}
           hasFeedback
@@ -168,9 +181,14 @@ export default function Profile() {
             }),
           ]}
         >
-          <Input.Password style={styles.textField} />
+          <Input.Password
+            style={styles.textField}
+            onFocus={() => {
+              if (error.password) setError((prevState) => ({ ...prevState, password: false }));
+            }}
+          />
         </Form.Item>
-        <Form.Item label={null} style={{ marginTop: 16 }}>
+        <Form.Item label={null} style={styles.button}>
           <Button block type="primary" htmlType="submit">
             {t('profile.changePassword')}
           </Button>

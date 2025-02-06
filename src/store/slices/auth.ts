@@ -17,7 +17,7 @@ export type AuthType = {
 
 import { ExtraParams } from 'src/store';
 import { COMMAND_ID } from 'src/shared/config';
-import { SignInBody } from 'src/shared/serverTypes';
+import { ChangePasswordBody, SignInBody } from 'src/shared/serverTypes';
 import { saveTokenToLocalStorage } from 'src/shared/token';
 
 export const signin = createAsyncThunk('auth/signin', async (authData: SignInBody, thunkAPI) => {
@@ -30,7 +30,7 @@ export const signin = createAsyncThunk('auth/signin', async (authData: SignInBod
       },
     }).then((res) => res.json());
 
-    if (response?.token) {
+    if ('token' in response) {
       return response;
     } else {
       return thunkAPI.rejectWithValue(response.errors[0].extensions.code);
@@ -50,7 +50,7 @@ export const signup = createAsyncThunk('auth/signup', async (authData: SignInBod
       },
     }).then((res) => res.json());
 
-    if (response?.token) {
+    if ('token' in response) {
       return response;
     } else {
       return thunkAPI.rejectWithValue(response.errors[0].extensions.code);
@@ -70,7 +70,7 @@ export const getProfile = createAsyncThunk('auth/getProfile', async (token: stri
       },
     }).then((res) => res.json());
 
-    if (response?.email) {
+    if ('email' in response) {
       return response;
     } else {
       return thunkAPI.rejectWithValue(response.errors[0].extensions.code);
@@ -79,6 +79,54 @@ export const getProfile = createAsyncThunk('auth/getProfile', async (token: stri
     return thunkAPI.rejectWithValue(e);
   }
 });
+
+export const updateProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async ({ token, name }: { token: string; name: string }, thunkAPI) => {
+    try {
+      const response = await fetch(`${(thunkAPI.extra as ExtraParams).url}/profile`, {
+        method: 'PATCH',
+        body: JSON.stringify({ name }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => res.json());
+
+      if ('email' in response) {
+        return response;
+      } else {
+        return thunkAPI.rejectWithValue(response.errors[0].extensions.code);
+      }
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e);
+    }
+  }
+);
+
+export const updatePassword = createAsyncThunk(
+  'auth/updatePassword',
+  async ({ token, body }: { token: string; body: ChangePasswordBody }, thunkAPI) => {
+    try {
+      const response = await fetch(`${(thunkAPI.extra as ExtraParams).url}/profile/change-password`, {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => res.json());
+
+      if ('success' in response) {
+        return response;
+      } else {
+        return thunkAPI.rejectWithValue(response.errors[0].extensions.code);
+      }
+    } catch (e) {
+      return thunkAPI.rejectWithValue(e);
+    }
+  }
+);
 
 const initialState: AuthType = null;
 
@@ -93,9 +141,9 @@ const AuthSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(signin.fulfilled, (_, action) => {
+      .addCase(signin.fulfilled, (state, action) => {
         saveTokenToLocalStorage(action.payload.token);
-        const { email, name } = action.payload;
+        const { email, name } = action.payload.profile;
         return { email, role: 1, ...(name ? { name } : {}) };
       })
       .addCase(signup.fulfilled, (_, action) => {
@@ -106,10 +154,14 @@ const AuthSlice = createSlice({
       .addCase(getProfile.fulfilled, (_, action) => {
         const { email, name } = action.payload;
         return { email, role: 1, ...(name ? { name } : {}) };
+      })
+      .addCase(updateProfile.fulfilled, (status, action) => {
+        const { email, name } = action.payload;
+        return { ...status, email, name };
       });
   },
 });
 
-export const { setAuth, clearAuth } = AuthSlice.actions;
+export const { clearAuth } = AuthSlice.actions;
 
 export const auth = AuthSlice.reducer;
