@@ -23,7 +23,7 @@ const authHeaders: AuthHeadersType = {
 };
 
 export const getMinMaxDates = (arr: Operation[]) => {
-  const datesInMs = arr.map((op) => new Date(op.date).valueOf());
+  const datesInMs = arr.filter((op) => op?.date).map((o) => new Date(o.date).valueOf());
   const min = Math.min(...datesInMs);
   const max = Math.max(...datesInMs);
 
