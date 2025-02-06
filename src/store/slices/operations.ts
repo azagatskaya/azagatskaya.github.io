@@ -14,6 +14,14 @@ import { OperationFieldsType } from 'src/components/operation/operation-full/Ope
 
 const PAGE_SIZE = 8;
 
+type AuthHeadersType = {
+  [key: string]: string;
+};
+
+const authHeaders: AuthHeadersType = {
+  'Content-Type': 'application/json',
+};
+
 export const getMinMaxDates = (arr: Operation[]) => {
   const datesInMs = arr.map((op) => new Date(op.date).valueOf());
   const min = Math.min(...datesInMs);
@@ -24,14 +32,13 @@ export const getMinMaxDates = (arr: Operation[]) => {
 
 export const getDateSliderValues = createAsyncThunk('operations/getDateSliderValues', async (_, thunkAPI) => {
   const token = getTokenFromLocalStorage();
+  const headers = authHeaders;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   try {
     const response = await fetch(`${(thunkAPI.extra as ExtraParams).url}/operations`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
     }).then((res) => res.json());
 
     if ('data' in response) {
@@ -46,14 +53,13 @@ export const getDateSliderValues = createAsyncThunk('operations/getDateSliderVal
 
 export const getOperations = createAsyncThunk('operations/getOperations', async (_, thunkAPI) => {
   const token = getTokenFromLocalStorage();
+  const headers = authHeaders;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   try {
     const response = await fetch(`${(thunkAPI.extra as ExtraParams).url}/operations`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers,
     }).then((res) => res.json());
 
     if ('data' in response) {
@@ -68,6 +74,9 @@ export const getOperations = createAsyncThunk('operations/getOperations', async 
 
 export const updateOperations = createAsyncThunk('operations/updateOperations', async (_, thunkAPI) => {
   const token = getTokenFromLocalStorage();
+  const headers = authHeaders;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
   const store = thunkAPI.getState() as AppState;
 
   const { pagination, sorting, date } = store.operations;
@@ -87,10 +96,7 @@ export const updateOperations = createAsyncThunk('operations/updateOperations', 
       `${(thunkAPI.extra as ExtraParams).url}/operations?${new URLSearchParams(filter).toString()}`,
       {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       }
     ).then((res) => res.json());
 
@@ -108,6 +114,8 @@ export const getOperationsPage = createAsyncThunk(
   'operations/getOperationsPage',
   async ({ pageNumber, sorting, date = null }: GetPageArgsType, thunkAPI) => {
     const token = getTokenFromLocalStorage();
+    const headers = authHeaders;
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
     const filter: FilterType = {
       pagination: JSON.stringify({
@@ -124,10 +132,7 @@ export const getOperationsPage = createAsyncThunk(
         `${(thunkAPI.extra as ExtraParams).url}/operations?${new URLSearchParams(filter).toString()}`,
         {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         }
       ).then((res) => res.json());
 
