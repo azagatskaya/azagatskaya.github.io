@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Flex, Skeleton, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import AmountSorting from 'src/components/amount-sorting/AmountSorting';
@@ -10,6 +10,7 @@ import { DateRangeType, SortField, Sorting, SortType } from 'src/shared/serverTy
 import { getDateSliderValues, getOperationsPage } from 'src/store/slices/operations';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import DateRangeSlider from 'src/components/range-slider/DateRangeSlider';
+import { getId } from 'src/shared/mock/products';
 
 type GetOperationsPageArgs =
   | {
@@ -21,7 +22,7 @@ type GetOperationsPageArgs =
 
 export const MIN_CARD_HEIGHT = 168;
 
-export const DATE_MIN = new Date(2024, 0, 1);
+export const DATE_MIN = new Date(2023, 0, 1);
 export const DATE_MAX = new Date(new Date().setMonth(new Date().getMonth() + 1));
 
 export const defaultDateRange = { min: DATE_MIN, max: DATE_MAX };
@@ -155,24 +156,28 @@ export default function OperationList(): ReactNode {
       >
         {operations.map((op) =>
           isAdmin ? (
-            <Link key={`link_${op.id.toString()}`} to={`/operations/${op.id}`} state={{ previousLocation: location }}>
+            <Link
+              key={`link_${op?.id.toString() || getId(16)}`}
+              to={`/operations/${op?.id}`}
+              state={{ previousLocation: location }}
+            >
               <OperationCompact
-                key={op.id}
-                amount={op.amount}
-                categoryName={op.category.name}
-                name={op.name}
-                date={op.date}
-                desc={op.desc}
+                key={op?.id || getId(16)}
+                amount={op?.amount || 0}
+                categoryName={op?.category?.name || ''}
+                name={op?.name || ''}
+                date={op?.date || null}
+                desc={op?.desc || ''}
               />
             </Link>
           ) : (
             <OperationCompact
-              key={op.id}
-              amount={op.amount}
-              categoryName={op.category.name}
-              name={op.name}
-              date={op.date}
-              desc={op.desc}
+              key={op?.id || getId(16)}
+              amount={op?.amount || 0}
+              categoryName={op?.category?.name || ''}
+              name={op?.name || ''}
+              date={op?.date || null}
+              desc={op?.desc || ''}
             />
           )
         )}
@@ -213,19 +218,17 @@ export default function OperationList(): ReactNode {
       {operations.length === 0 ? (
         isDateFilterOn ? (
           <>
-            <Typography style={{ color: palette.fontColor, width: '100%', textAlign: 'center', marginTop: '100px' }}>
-              {t('operations.msgNoData')}
-            </Typography>
-            <Typography style={{ color: palette.fontColor, width: '100%', textAlign: 'center', marginTop: '100px' }}>
-              {t('operations.msgTryChangeFilters')}
-            </Typography>
+            <Typography style={styles.typo(palette.fontColor)}>{t('operations.msgNoData')}</Typography>
+            <Typography style={styles.typo(palette.fontColor)}>{t('operations.msgTryChangeFilters')}</Typography>
           </>
         ) : (
-          <Typography style={{ color: palette.fontColor, width: '100%', textAlign: 'center', marginTop: '100px' }}>
-            {t('operations.msgNoData')}
-          </Typography>
+          <Typography style={styles.typo(palette.fontColor)}>{t('operations.msgNoData')}</Typography>
         )
       ) : null}
     </Flex>
   );
 }
+
+const styles = {
+  typo: (color: string): CSSProperties => ({ color, width: '100%', textAlign: 'center', marginTop: '100px' }),
+};
