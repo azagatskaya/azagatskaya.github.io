@@ -1,5 +1,5 @@
 import { LoginOutlined, LogoutOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
@@ -7,10 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from 'src/store';
 import { clearAuth } from 'src/store/slices/auth';
 import { removeTokenFromLocalStorage } from 'src/shared/token';
+import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 
 export type AuthModeType = 'signin' | 'signout';
 
 export default function Login() {
+  const { messageApi } = useContext<ThemeContextType>(ThemeContext);
   const authenticated = useSelector((state: AppState) => !!state.auth?.email);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -26,6 +28,7 @@ export default function Login() {
     else {
       removeTokenFromLocalStorage();
       dispatch(clearAuth());
+      messageApi.success(t('auth.msgSignOutSuccess'));
     }
     setAuthMode((prevState) => (prevState === 'signin' ? 'signout' : 'signin'));
   };

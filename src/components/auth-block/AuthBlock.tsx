@@ -1,5 +1,5 @@
 import { Button, Card, Form, type FormProps, Input, Typography } from 'antd';
-import React, { useContext, useState } from 'react';
+import React, { CSSProperties, useContext, useMemo, useState } from 'react';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
@@ -27,35 +27,31 @@ export default function AuthBlock() {
   const navigate = useNavigate();
   const [error, setError] = useState({ signin: false, signup: false, password: false });
 
-  const onFinish: FormProps<FormFieldsType>['onFinish'] = (values) => {
+  const onFinish: FormProps<FormFieldsType>['onFinish'] = async (values) => {
     console.log('Submit success:', values);
 
     switch (mode) {
       case 'signin':
-        (async () => {
-          try {
-            await dispatch(signin(values)).unwrap();
-            messageApi.success(t('auth.msgSigninSuccess'));
-            navigate('/operations');
-          } catch (err) {
-            setError((prevState) => ({ ...prevState, signin: true }));
-            messageApi.error(t(`error.${err}`));
-          }
-        })();
+        try {
+          await dispatch(signin(values)).unwrap();
+          messageApi.success(t('auth.msgSigninSuccess'));
+          navigate('/operations');
+        } catch (err) {
+          setError((prevState) => ({ ...prevState, signin: true }));
+          messageApi.error(t(`error.${err}`));
+        }
         break;
       case 'signup':
-        (async () => {
-          try {
-            await dispatch(signup(values)).unwrap();
-            messageApi.success(t('auth.msgSignupSuccess'));
-            navigate('/profile');
-          } catch (err) {
-            setError((prevState) =>
-              err === 'ERR_INVALID_PASSWORD' ? { ...prevState, password: true } : { ...prevState, signup: true }
-            );
-            messageApi.error(t(`error.${err}`));
-          }
-        })();
+        try {
+          await dispatch(signup(values)).unwrap();
+          messageApi.success(t('auth.msgSignupSuccess'));
+          navigate('/profile');
+        } catch (err) {
+          setError((prevState) =>
+            err === 'ERR_INVALID_PASSWORD' ? { ...prevState, password: true } : { ...prevState, signup: true }
+          );
+          messageApi.error(t(`error.${err}`));
+        }
         break;
     }
   };
@@ -70,6 +66,20 @@ export default function AuthBlock() {
     );
   };
 
+  const styles: { [key: string]: CSSProperties } = useMemo(() => {
+    return {
+      card: { width: '100%', maxWidth: 616, marginBottom: 8, backgroundColor: palette.background },
+      cardText: { flex: 'none', color: palette.fontColor },
+      textField: { color: palette.fontColor, backgroundColor: palette.background },
+      size: { maxWidth: 614, minWidth: 377 },
+      font: { color: palette.fontColor },
+      typo: { color: palette.fontColor, textAlign: 'left' },
+      labelPadding: { paddingBottom: 6 },
+      typoPadding: { paddingBottom: 12 },
+      button: { marginTop: 16 },
+    };
+  }, [palette.fontColor, palette.background]);
+
   return (
     <Card
       title={mode === 'signin' ? t('auth.signIn') : t('auth.signUp')}
@@ -78,21 +88,22 @@ export default function AuthBlock() {
           {mode === 'signin' ? t('auth.signUp') : t('auth.signIn')}
         </Button>
       }
-      style={{ width: '100%', maxWidth: 616, marginBottom: 8, backgroundColor: palette.background }}
-      styles={{ title: { flex: 'none', color: palette.fontColor } }}
+      style={styles.card}
+      styles={{ title: styles.cardText }}
     >
-      <Typography style={{ color: palette.fontColor }}>{'Добавленные профили:'}</Typography>
-      <Typography style={{ color: palette.fontColor }}>{'admin178@gmail.com 123qweasd'}</Typography>
+      <Typography style={{ ...styles.typo, ...styles.labelPadding }}>{'Добавленные профили:'}</Typography>
+      <Typography style={styles.typo}>{'admin178@gmail.com 123qweasd'}</Typography>
+      <Typography style={{ ...styles.typo, ...styles.typoPadding }}>{'admin178_1@gmail.com 123qweasd'}</Typography>
       <Form
         form={form}
         layout="vertical"
-        style={{ maxWidth: 614, minWidth: 377 }}
+        style={styles.size}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
         autoComplete="off"
       >
         <Form.Item<FormFieldsType>
-          label={<label style={{ color: palette.fontColor }}>{t('auth.email')}</label>}
+          label={<label style={styles.font}>{t('auth.email')}</label>}
           name="email"
           validateStatus={error.signin || error.signup ? 'error' : null}
           hasFeedback
@@ -105,7 +116,7 @@ export default function AuthBlock() {
           ]}
         >
           <Input
-            style={{ color: palette.fontColor, backgroundColor: palette.background }}
+            style={styles.textField}
             onFocus={() => {
               if (error.signin || error.signup)
                 setError((prevState) => ({ ...prevState, signin: false, signup: false }));
@@ -113,7 +124,7 @@ export default function AuthBlock() {
           />
         </Form.Item>
         <Form.Item<FormFieldsType>
-          label={<label style={{ color: palette.fontColor }}>{t('auth.password')}</label>}
+          label={<label style={styles.font}>{t('auth.password')}</label>}
           name="password"
           validateStatus={error.signin || error.signup || error.password ? 'error' : null}
           hasFeedback
@@ -123,7 +134,7 @@ export default function AuthBlock() {
           ]}
         >
           <Input.Password
-            style={{ color: palette.fontColor, backgroundColor: palette.background }}
+            style={styles.textField}
             onFocus={() => {
               if (error.signin || error.signup || error.password)
                 setError((prevState) => ({ ...prevState, signin: false, signup: false, password: false }));
@@ -132,7 +143,7 @@ export default function AuthBlock() {
         </Form.Item>
         {mode === 'signup' ? (
           <Form.Item<FormFieldsType>
-            label={<label style={{ color: palette.fontColor }}>{t('profile.newPasswordCheck')}</label>}
+            label={<label style={styles.font}>{t('profile.newPasswordCheck')}</label>}
             validateStatus={error.signin || error.signup || error.password ? 'error' : null}
             name="passwordCheck"
             dependencies={['password']}
@@ -152,7 +163,7 @@ export default function AuthBlock() {
             ]}
           >
             <Input.Password
-              style={{ color: palette.fontColor, backgroundColor: palette.background }}
+              style={styles.textField}
               onFocus={() => {
                 if (error.signin || error.signup || error.password)
                   setError((prevState) => ({ ...prevState, signin: false, signup: false, password: false }));
@@ -160,7 +171,7 @@ export default function AuthBlock() {
             />
           </Form.Item>
         ) : null}
-        <Form.Item label={null} style={{ marginTop: 16 }}>
+        <Form.Item label={null} style={styles.button}>
           <Button block type="primary" htmlType="submit">
             {mode === 'signin' ? t('auth.signIn') : t('auth.signUp')}
           </Button>

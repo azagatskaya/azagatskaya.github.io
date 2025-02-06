@@ -1,114 +1,76 @@
-import React, { ReactNode, useContext, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 import { Modal as AntModal, Typography } from 'antd';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext, ThemeContextType } from 'src/contexts/ThemeContext';
 import { useNavigate, useParams } from 'react-router';
-import OperationFull, { OperationProps } from 'src/components/operation/operation-full/OperationFull';
+import OperationFull from 'src/components/operation/operation-full/OperationFull';
 import { CloseOutlined } from '@ant-design/icons';
 import withAuth from 'src/shared/hocs/withAuth';
-import { Operation } from 'src/homeworks/ts1/3_write';
-import { getId } from 'src/shared/mock/products';
-import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from 'src/store';
-import { addOperation, updateOperation } from 'src/store/slices/operations';
-
-const defaultOperation: Operation = {
-  id: `pr_${getId(6)}`,
-  name: 'Трата',
-  createdAt: dayjs(new Date()).format('YYYY-MM-DD'),
-  amount: 0,
-  category: { id: '', name: '' },
-  type: 'Cost',
-};
+import { AppDispatch, AppState } from 'src/store';
+import { clearCurrentOperation, getOperation } from 'src/store/slices/operations';
 
 export default withAuth(function Modal(): ReactNode {
   const { operationId } = useParams();
-  const { palette } = useContext<ThemeContextType>(ThemeContext);
+  const { palette, messageApi } = useContext<ThemeContextType>(ThemeContext);
   const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
-  const operations = useSelector((state: AppState) => state.operations);
-  const dispatch = useDispatch();
+  const [visible, setVisible] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
+  const currentOperation = useSelector((state: AppState) => state.operations.currentOperation);
 
   useEffect(() => {
-    setVisible(!!operationId);
-  }, [operationId]);
+    if (operationId && operationId !== 'create') {
+      try {
+        (async () => {
+          await dispatch(getOperation(operationId));
+          setVisible(true);
+        })();
+      } catch (err) {
+        messageApi.error(t(`error.${err}`));
+      }
+    } else if (operationId === 'create') setVisible(true);
+  }, []);
 
-  const handleClose = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleClose = () => {
     setVisible(false);
+    dispatch(clearCurrentOperation());
     navigate('/operations');
   };
 
-  const operation = useMemo(() => {
-    return visible && operationId && operationId !== 'create'
-      ? operations.find((op) => op.id === operationId)
-      : defaultOperation;
-  }, [operationId, operations, visible]);
-
-  const handleItemChange = (values: OperationProps) => {
-    console.log('operationId', operationId);
-    const itemIndex = operations.findIndex((op) => op.id === values.id);
-    if (itemIndex > -1) {
-      // update operation
-      let updatedItem = { ...operations[itemIndex] };
-      Object.entries(values).map(([key, val]) => {
-        if (updatedItem[key as keyof OperationProps] !== val) {
-          updatedItem = {
-            ...updatedItem,
-            [key === 'categoryName' ? 'category' : (key as keyof OperationProps)]:
-              key === 'categoryName' ? { ...operations[itemIndex].category, name: val } : key === 'amount' ? +val : val,
-          };
-        }
-      });
-      dispatch(updateOperation(updatedItem));
-    } else {
-      // add operation
-      const newOperation = {
-        ...defaultOperation,
-        ...values,
-        amount: +values.amount,
-        category: { ...defaultOperation.category, name: values.name },
-      };
-      dispatch(addOperation(newOperation));
-      navigate(`/operations/${newOperation.id}`);
-    }
-  };
+  const styles: { [key: string]: CSSProperties } = useMemo(() => {
+    return {
+      textField: { color: palette.fontColor, backgroundColor: palette.background },
+      font: { color: palette.fontColor },
+      fontDisabled: { color: palette.fontColorDisabled },
+      modalBody: { minHeight: 402 },
+    };
+  }, [palette.fontColor, palette.background, palette.fontColorDisabled]);
 
   return visible
     ? createPortal(
         <AntModal
           title={
-            <Typography style={{ color: palette.fontColor }}>
+            <Typography style={styles.font}>
               {operationId === 'create' ? t('operations.modalTitleAdd') : t('operations.modalTitleUpdate')}
             </Typography>
           }
           centered
           open={visible}
-          closeIcon={<CloseOutlined style={{ color: palette.fontColorDisabled }} />}
+          closeIcon={<CloseOutlined style={styles.fontDisabled} />}
           onCancel={handleClose}
           footer={[]}
           width={650}
           styles={{
-            content: { backgroundColor: palette.background, color: palette.fontColor },
-            body: { minHeight: 402 },
-            header: { backgroundColor: palette.background, color: palette.fontColor },
+            content: styles.textField,
+            body: styles.modalBody,
+            header: styles.textField,
           }}
         >
-          {operation ? (
-            <OperationFull
-              id={operationId}
-              amount={operation.amount}
-              categoryName={operation.category.name}
-              name={operation.name}
-              desc={operation.desc}
-              createdAt={operation.createdAt}
-              handleItemChange={handleItemChange}
-            />
-          ) : (
-            <Typography style={{ color: palette.fontColor }}>{t('operations.msgUnknownOperationId')}</Typography>
-          )}
+          {(operationId !== 'create' && currentOperation) || operationId === 'create' ? (
+            <OperationFull id={operationId} />
+          ) : null}
         </AntModal>,
         document.body
       )

@@ -3,14 +3,14 @@ import { init } from './slices/init';
 import { operations } from './slices/operations';
 import { SERVER_URL } from 'src/shared/config';
 import { auth } from 'src/store/slices/auth';
-import { authApi } from 'src/services/authentication';
+import { categories } from 'src/store/slices/categories';
 
 export const store = configureStore({
   reducer: {
     auth,
+    categories,
     init,
     operations,
-    [authApi.reducerPath]: authApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -19,7 +19,7 @@ export const store = configureStore({
           url: SERVER_URL,
         },
       },
-    }).concat(authApi.middleware),
+    }),
 });
 
 export type AppState = ReturnType<typeof store.getState>;

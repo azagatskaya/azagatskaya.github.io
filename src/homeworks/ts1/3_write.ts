@@ -16,9 +16,9 @@ export type Category = {
 type Product = {
   id: string;
   name: string;
-  photo: string;
+  photo?: string;
   desc?: string;
-  createdAt: string;
+  date: string;
   oldPrice?: number;
   price: number;
   category: Category;
@@ -28,7 +28,7 @@ type Cost = {
   id: string;
   name: string;
   desc?: string;
-  createdAt: string;
+  date: string;
   amount: number;
   category: Category;
   type: 'Cost';
@@ -38,7 +38,7 @@ type Profit = {
   id: string;
   name: string;
   desc?: string;
-  createdAt: string;
+  date: string;
   amount: number;
   category: Category;
   type: 'Profit';
@@ -50,13 +50,13 @@ export type Operation = Cost | Profit;
  * Создает случайный продукт (Product).
  * Принимает дату создания (строка)
  * */
-export const createRandomProduct = (createdAt: string): Product => {
+export const createRandomProduct = (date: string): Product => {
   const category: Category = getCategory();
   const prodName: string = getProductName(category.name);
 
   return {
     category,
-    createdAt,
+    date,
     id: `pr_${getId(6)}`,
     name: prodName,
     photo: `${prodName}.jpg`,
@@ -70,14 +70,14 @@ export const createRandomProduct = (createdAt: string): Product => {
  * Создает случайную операцию (Operation).
  * Принимает дату создания (строка)
  * */
-export const createRandomOperation = (createdAt: string): Operation => {
+export const createRandomOperation = (date: string): Operation => {
   const category: Category = getCategory();
   const type: 'Cost' | 'Profit' = getRandom(2) ? 'Cost' : 'Profit';
   return {
     id: `pr_${getId(6)}`,
     name: type === 'Cost' ? 'Трата' : 'Доход',
     ...(getRandom(3) ? { desc: type === 'Cost' ? 'Покупка техники' : 'Поступила оплата по счету' } : {}),
-    createdAt,
+    date,
     amount: Math.floor(Math.random() * 10_000),
     category,
     type,

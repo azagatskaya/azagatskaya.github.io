@@ -17,8 +17,6 @@ export default function withAuth<P>(Component: React.ComponentType<P>) {
       else return true;
     }, [authenticated, pathname, role]);
 
-    console.log('pathname', pathname, '| role', role, '| auth', authenticated);
-
     return getAccess() ? <Component {...props} /> : <NoAccessPage />;
   };
 
