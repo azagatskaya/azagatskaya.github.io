@@ -30,6 +30,7 @@ export default function DateRangeSlider({
       <Slider
         range
         tooltip={{
+          color: palette.contrast,
           open: true,
           formatter: (value) => (
             <Typography style={{ color: palette.fontColor }}>{dayjs(value).format('DD-MM-YYYY').toString()}</Typography>

@@ -541,7 +541,7 @@ export default function OperationFull({ id }: OperationFullProps): ReactNode {
               cancelButtonProps={{ color: 'primary', variant: 'text' }}
               okText={t('ok')}
               cancelText={t('cancel')}
-              color={palette.background}
+              color={palette.contrast}
               icon={<DeleteFilled />}
             >
               <Button

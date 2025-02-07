@@ -10,15 +10,7 @@ export type ThemeContextType = {
   messageApi: MessageInstance | null;
   contextHolder: React.ReactElement | null;
   palette: {
-    primary: string;
-    secondary: string;
-    background: string;
-    foreground: string;
-    borderColor: string;
-    error: string;
-    success: string;
-    fontColor: string;
-    fontColorDisabled: string;
+    [key: string]: string;
   };
 };
 
@@ -27,17 +19,7 @@ export const ThemeContext = createContext<ThemeContextType>({
   setTheme: null,
   messageApi: null,
   contextHolder: null,
-  palette: {
-    primary: '',
-    secondary: '',
-    background: '',
-    foreground: '',
-    borderColor: '',
-    error: '',
-    success: '',
-    fontColor: '',
-    fontColorDisabled: '',
-  },
+  palette: {},
 });
 
 export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
@@ -49,6 +31,7 @@ export const ThemeProvider: FC<{ children: ReactNode }> = ({ children }) => {
       primary: theme === 'light' ? '#3d96c8' : '#2a698c',
       secondary: theme === 'light' ? '#c83d95' : '#14a37f',
       background: theme === 'light' ? '#fff' : '#121212',
+      contrast: theme === 'light' ? '#fff' : '#000000F9',
       foreground: theme === 'light' ? '#00000011' : '#001529',
       borderColor: theme === 'light' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.2)',
       error: theme === 'light' ? '#d32f2f' : '#c62828',
