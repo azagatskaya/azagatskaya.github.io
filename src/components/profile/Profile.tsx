@@ -158,6 +158,7 @@ export default function Profile() {
           ]}
         >
           <Input.Password
+            disabled={true}
             style={styles.textField}
             onFocus={() => {
               if (error.password) setError((prevState) => ({ ...prevState, password: false }));
@@ -182,6 +183,7 @@ export default function Profile() {
           ]}
         >
           <Input.Password
+            disabled={true}
             style={styles.textField}
             onFocus={() => {
               if (error.password) setError((prevState) => ({ ...prevState, password: false }));
